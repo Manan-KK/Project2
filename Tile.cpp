@@ -1,12 +1,43 @@
 #include <iostream>
 #include <cstdlib> 
 #include <ctime>
+#include "Tile.h"
 
-struct Tile{
-    char color;
-};
+using namespace std;
 
-class StartTile{
+Tile::Tile(){
+    //Initialized variables like positon and color
+}
+
+void Tile::onStartTile(){
+//Will be automatically called for both players when the game begins
+}
+void Tile::onEndTile(){
+//This will end the game and declare a winner.
+//It will print the rankings of the players within the terminal based on their stats/gameplay
+}
+void Tile::onChanceTile(){
+//Gives player a chance to either win or lose by pulling a chance "card"
+}
+void Tile::onGambleTile(){
+//Gives player opportunity to put points in with hopes of making some back
+//Also has an equal chance to make the player lose money
+}
+void Tile::onFightTile(){
+//Gives player a chance to battle the other player in hopes of winning rewards
+//Battles will conspire based on their stats and how we will format battles
+}
+void Tile::onRiddleTile(){
+//Using a text file, the player will be asked one of many riddles, something with a simple answer like a color or number 
+//Chance to win points/money
+}
+
+
+/* Here, I originally wrote the tiles as individual classes. 
+May be an idea for later.
+I kept the idea due to it haivng some useful code.*/
+
+/*class StartTile{
     private:
         int position = 0;
     public:
@@ -45,6 +76,8 @@ class ChanceTile{
 //a tile that the player can choose how many 
 //points they wish to put on the line in order to earn or lose points*/
 
+/*
+
 class GambleTile{
     private:
         int points;
@@ -68,7 +101,7 @@ class GambleTile{
 
 
 };
-class FightTile(){
+class FightTile{
     private:
     public:
         FightTile(){}
@@ -80,7 +113,7 @@ class FightTile(){
 };
 //this tile randomly pushes the character either 1-3 spots behind or 1-3 spots in front
 //these tiles will not be near the start or end tiles
-class RandomTile(){
+class RandomTile{
     private:
     public:
         RandomTile(){
@@ -98,18 +131,21 @@ class RandomTile(){
 };
 //this tile gives the player a chance to trade in points for other attribute points
 //may also give chances for the player to buy special items (possible inventory implementation)
-class ShopTile(){
+class ShopTile{
     private:
+
     public:
         ShopTile(){
             //gives the player a list of what they can buy
         }
 };
-class BattleTile(){
+class BattleTile{
     private:
     public:
         BattleTile(){
             //gives the player a chance to battle the other player if they choose for a chance to win rewards
             //will further add more attributes to the class for specifics
         }
-}
+};
+
+*/
