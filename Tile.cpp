@@ -7,6 +7,7 @@ using namespace std;
 
 Tile::Tile(){
     //Initialized variables like positon and color
+    //Will correspond each tile with a distinct color
 }
 
 void Tile::onStartTile(){
@@ -17,17 +18,59 @@ void Tile::onEndTile(){
 //It will print the rankings of the players within the terminal based on their stats/gameplay
 }
 void Tile::onChanceTile(){
+    cout<<"You landed on a chance tile! Pull a chance card? Y/N"<<endl;
+    char choice;
+    cin>>choice;
+    while(choice!='Y' || choice!='N'){
+        cout<<"That's not a proper input. Please try again:"<<endl;
+        cin>>choice;
+    }
+    if(choice=='Y'){
+        pullChanceCard();
+    }
 //Gives player a chance to either win or lose by pulling a chance "card"
 }
+void Tile::pullChanceCard(){
+    //pulls the chance card
+    //randomly selects a card that either helps/hurts the player
+}
 void Tile::onGambleTile(){
+    cout<<"You landed on a gamble tile! How much will you throw in to test your luck?"<<endl;
+    cout<<"0-1000:"<<endl;
+    int amount;
+    cin >> amount;
+    while(amount < 0 || amount > 1000){
+        cout<<"That's not within the range. Please try again:"<<endl;
+    }
+    gamble(amount);
 //Gives player opportunity to put points in with hopes of making some back
 //Also has an equal chance to make the player lose money
 }
+void Tile::gamble(int amount){
+    //runs a random number system to either increase/decrease the amount they decide to put in
+    //also could run a small game that involves them choosing a random number, closer to the number they get more money they get
+}
 void Tile::onFightTile(){
+    cout<<"Will you fight another player? Y/N"<<endl;
+    char choice;
+    while(choice!='Y' || choice!='N'){
+        cout<<"That's not a proper input. Please try again:"<<endl;
+        cin>>choice;
+    }
+    if(choice == 'Y'){
+        cout<<"Which player will you face?"<<endl;
+        int playerChoice;
+        cin >> playerChoice;
+        fightPlayer(playerChoice);
+    }
 //Gives player a chance to battle the other player in hopes of winning rewards
 //Battles will conspire based on their stats and how we will format battles
 }
+void Tile::fightPlayer(int playerChoice){
+
+}
 void Tile::onRiddleTile(){
+    cout<<"Answer this riddle to win rewards:"<<endl;
 //Using a text file, the player will be asked one of many riddles, something with a simple answer like a color or number 
 //Chance to win points/money
 }

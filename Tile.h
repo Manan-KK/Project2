@@ -11,8 +11,11 @@ class Tile{
     void onStartTile();
     void onEndTile();
     void onChanceTile();
+    void pullChanceCard();
     void onGambleTile();
+    void gamble(int amount);
     void onFightTile();
+    void fightPlayer(int playerChoice);
     void onRiddleTile();
 };
 #endif
