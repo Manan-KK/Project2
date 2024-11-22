@@ -1,9 +1,7 @@
-// player.h
 #ifndef PLAYER_H
 #define PLAYER_H
 
 #include <string>
-#include <vector>
 
 class BaseC {
 private:
@@ -12,6 +10,9 @@ private:
     int sta;
     int wis;
     int PP;
+
+    //number of items
+    int itemCount;
 
     // Helper function to validate and reset statistics
     void validateStatistics();
@@ -26,6 +27,7 @@ public:
     int getStamina() const;
     int getWisdom() const;
     int getPridePoints() const;
+    int getItemCount() const;
 
     // Setter functions
     void setAge(int newAge);
@@ -33,6 +35,7 @@ public:
     void setStamina(int newSta);
     void setWisdom(int newWis);
     void setPridePoints(int newPP);
+    void setItemCount(int count);
 
     // Increment functions
     void increaseAge(int change);
@@ -40,6 +43,7 @@ public:
     void increaseStamina(int change);
     void increaseWisdom(int change);
     void increasePridePoints(int change);
+    void increaseItemCount(int count);
 
     // Decrement functions
     void decreaseAge(int change);
@@ -47,8 +51,9 @@ public:
     void decreaseStamina(int change);
     void decreaseWisdom(int change);
     void decreasePridePoints(int change);
+    void decreaseItemCount(int count);
 
-    // Multiply functions
+    //Multiply Functions
     void multiplyAge(int factor);
     void multiplyStrength(int factor);
     void multiplyStamina(int factor);
@@ -57,19 +62,13 @@ public:
 
     // Utility functions
     bool isEven(int num) const;
-    void displayStats() const; // Display player's current stats
+    void displayStats() const; // Display players current stats
     void resetStats();         // Reset stats to default values
 
-    // Additional functions for a board game player
+    // Currently broken functions that need inter-class operability later on.
     void moveToPosition(int position); // Move player to a new position
-    void gainItem(const std::string& itemName); // Add item to inventory
-    void useItem(const std::string& itemName);  // Use item from inventory
-    void attack(BaseC& opponent);               // Attack another player
-    void tradeItem(BaseC& otherPlayer, const std::string& yourItem, const std::string& theirItem); // Trade items
-    bool hasWon() const;                        // Check if player has won
-
-    // Inventory
-    std::vector<std::string> inventory;
+    void useItem();                    // Use an item 
+    void attack(BaseC& opponent);      // Attack another player
 };
 
-#endif // PLAYER_H
+#endif 

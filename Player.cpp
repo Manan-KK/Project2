@@ -1,12 +1,12 @@
-// player.cpp
+
 #include "Player.h"
 #include <iostream>
-#include <algorithm> // For std::find
+using namespace std;
 
 // Constructor
 BaseC::BaseC(int age, int str, int sta, int wis, int PP)
     : age(age), str(str), sta(sta), wis(wis), PP(PP) {
-    validateStatistics(); // Ensure valid initial values
+    validateStatistics(); 
 }
 
 // Helper function to validate and reset statistics
@@ -57,11 +57,11 @@ bool BaseC::isEven(int num) const {
 }
 
 void BaseC::displayStats() const {
-    std::cout << "Age: " << age << "\n"
-              << "Strength: " << str << "\n"
-              << "Stamina: " << sta << "\n"
-              << "Wisdom: " << wis << "\n"
-              << "Pride Points: " << PP << "\n";
+    cout << "Age: " << age << "\n";
+    cout << "Strength: " << str << "\n";
+    cout  << "Stamina: " << sta << "\n";
+    cout  << "Wisdom: " << wis << "\n";
+    cout  << "Pride Points: " << PP << "\n";
 }
 
 void BaseC::resetStats() {
@@ -70,72 +70,41 @@ void BaseC::resetStats() {
     wis = 100;
     PP = 20000;
     validateStatistics();
-    std::cout << "Stats have been reset to default values.\n";
+    cout << "Stats have been reset to Base values.\n";
 }
-
-// Additional functions for a board game player
 
 // Move the player to a new position
 void BaseC::moveToPosition(int position) {
-    // Implement movement logic
-    std::cout << "Player moves to position " << position << ".\n";
+    // Implement movement logic with board later
+    cout << "Player moves to position " << position << ".\n";
 }
 
-// Add an item to the player's inventory
-void BaseC::gainItem(const std::string& itemName) {
-    inventory.push_back(itemName);
-    std::cout << "Player gains item: " << itemName << ".\n";
-}
-
-// Use an item from the player's inventory
-void BaseC::useItem(const std::string& itemName) {
-    auto it = std::find(inventory.begin(), inventory.end(), itemName);
-    if (it != inventory.end()) {
-        // Implement item usage logic
-        std::cout << "Player uses item: " << itemName << ".\n";
-        inventory.erase(it); // Remove item after use
+// Use an item
+void BaseC::useItem() {
+    if (itemCount > 0) {
+        cout << "Player uses an item.\n";
+        // Example item usage code, will likely implement picker menu and individual class that will work with tile. 
+        increaseStrength(50);
+        decreaseItemCount(1);
     } else {
-        std::cout << "Item not found in inventory.\n";
+        cout << "No items to use.\n";
     }
 }
-
-// Attack another player
+//Random attack method, will also again likely be modified to be used with board.
 void BaseC::attack(BaseC& opponent) {
-    // Simple attack logic based on Strength attribute
     std::cout << "Attacking opponent...\n";
-    if (this->str > opponent.str) {
+
+    //random  
+    srand((time(0))); // Seed random number generator
+    int outcome = rand() % 2; // Generates 0 or 1
+
+    if (outcome == 0) {
         std::cout << "You win the attack!\n";
         this->increasePridePoints(100);
         opponent.decreasePridePoints(100);
-    } else if (this->str < opponent.str) {
+    } else {
         std::cout << "You lose the attack!\n";
         this->decreasePridePoints(100);
         opponent.increasePridePoints(100);
-    } else {
-        std::cout << "It's a tie! No one gains or loses Pride Points.\n";
     }
-}
-
-// Trade items with another player
-void BaseC::tradeItem(BaseC& otherPlayer, const std::string& yourItem, const std::string& theirItem) {
-    auto yourIt = std::find(inventory.begin(), inventory.end(), yourItem);
-    auto theirIt = std::find(otherPlayer.inventory.begin(), otherPlayer.inventory.end(), theirItem);
-
-    if (yourIt != inventory.end() && theirIt != otherPlayer.inventory.end()) {
-        inventory.erase(yourIt);
-        otherPlayer.inventory.erase(theirIt);
-
-        inventory.push_back(theirItem);
-        otherPlayer.inventory.push_back(yourItem);
-
-        std::cout << "Trade successful! You traded " << yourItem << " for " << theirItem << ".\n";
-    } else {
-        std::cout << "Trade failed. Item not found.\n";
-    }
-}
-
-// Check if player has won (example condition)
-bool BaseC::hasWon() const {
-    // Example win condition: Pride Points exceed a certain threshold
-    return PP >= 50000;
 }
