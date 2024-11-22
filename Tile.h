@@ -17,6 +17,7 @@ class Tile{
     void onFightTile();
     void fightPlayer(int playerChoice);
     void onRiddleTile();
+    bool getTypeOfTile(int index);
 };
 #endif
 

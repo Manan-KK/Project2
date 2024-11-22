@@ -74,6 +74,14 @@ void Tile::onRiddleTile(){
 //Using a text file, the player will be asked one of many riddles, something with a simple answer like a color or number 
 //Chance to win points/money
 }
+bool Tile::getTypeOfTile(int index){
+    if(index < 0 || index > 52){
+        return false;
+    }
+    //returns the type of file at the declared index
+    //type of tile will correspond to what color the tile is
+    //returns false if index is out of scope
+}
 
 
 /* Here, I originally wrote the tiles as individual classes. 

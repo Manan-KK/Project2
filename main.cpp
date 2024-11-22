@@ -8,5 +8,4 @@ int main(){
     b.displayBoard();
     b.movePlayer(0);
     return 0;
-
 }
