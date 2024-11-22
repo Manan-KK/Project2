@@ -3,6 +3,8 @@
 #include <iostream>
 #include <algorithm> // For std::find
 
+
+
 // Constructor
 BaseC::BaseC(int age, int str, int sta, int wis, int PP)
     : age(age), str(str), sta(sta), wis(wis), PP(PP) {
