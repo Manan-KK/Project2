@@ -94,18 +94,18 @@ void BaseC::useItem() {
 }
 //Random attack method, will also again likely be modified to be used with board.
 void BaseC::attack(BaseC& opponent) {
-    std::cout << "Attacking opponent...\n";
+    cout << "Attacking opponent...\n";
 
     //random  
     srand((time(0))); // Seed random number generator
     int outcome = rand() % 2; // Generates 0 or 1
 
     if (outcome == 0) {
-        std::cout << "You win the attack!\n";
+        cout << "You win the attack!\n";
         this->increasePridePoints(100);
         opponent.decreasePridePoints(100);
     } else {
-        std::cout << "You lose the attack!\n";
+        cout << "You lose the attack!\n";
         this->decreasePridePoints(100);
         opponent.increasePridePoints(100);
     }
