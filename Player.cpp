@@ -1,57 +1,60 @@
-
+// Player.cpp
 #include "Player.h"
 #include <iostream>
+
 using namespace std;
 
-
-
 // Constructor
-BaseC::BaseC(int age, int str, int sta, int wis, int PP)
-    : age(age), str(str), sta(sta), wis(wis), PP(PP) {
-    validateStatistics(); 
+BaseC::BaseC(string name, int age, int attack, int defense, int intellect, int VP)
+    : name(name), age(age), attack(attack), defense(defense), intellect(intellect), VP(VP) {
+    validateStatistics();
 }
 
 // Helper function to validate and reset statistics
 void BaseC::validateStatistics() {
-    if (str < 100) str = 100;
-    if (sta < 100) sta = 100;
-    if (wis < 100) wis = 100;
+    if (attack < 100) attack = 100;
+    if (defense < 100) defense = 100;
+    if (intellect < 100) intellect = 100;
 }
 
 // Getter functions
+string BaseC::getName() const { return name; }
 int BaseC::getAge() const { return age; }
-int BaseC::getStrength() const { return str; }
-int BaseC::getStamina() const { return sta; }
-int BaseC::getWisdom() const { return wis; }
-int BaseC::getPridePoints() const { return PP; }
+int BaseC::getAttack() const { return attack; }
+int BaseC::getDefense() const { return defense; }
+int BaseC::getIntellect() const { return intellect; }
+int BaseC::getVictoryPoints() const { return VP; }
+int BaseC::getPathType() const { return pathType; }
 
 // Setter functions
+void BaseC::setName(string newName) { name = newName; }
 void BaseC::setAge(int newAge) { age = newAge; }
-void BaseC::setStrength(int newStr) { str = newStr; validateStatistics(); }
-void BaseC::setStamina(int newSta) { sta = newSta; validateStatistics(); }
-void BaseC::setWisdom(int newWis) { wis = newWis; validateStatistics(); }
-void BaseC::setPridePoints(int newPP) { PP = newPP; }
+void BaseC::setAttack(int newAttack) { attack = newAttack; validateStatistics(); }
+void BaseC::setDefense(int newDefense) { defense = newDefense; validateStatistics(); }
+void BaseC::setIntellect(int newIntellect) { intellect = newIntellect; validateStatistics(); }
+void BaseC::setVictoryPoints(int newVP) { VP = newVP; }
+void BaseC::setPathType(int path) { pathType = path; }
 
 // Increment functions
 void BaseC::increaseAge(int change) { age += change; }
-void BaseC::increaseStrength(int change) { str += change; validateStatistics(); }
-void BaseC::increaseStamina(int change) { sta += change; validateStatistics(); }
-void BaseC::increaseWisdom(int change) { wis += change; validateStatistics(); }
-void BaseC::increasePridePoints(int change) { PP += change; }
+void BaseC::increaseAttack(int change) { attack += change; validateStatistics(); }
+void BaseC::increaseDefense(int change) { defense += change; validateStatistics(); }
+void BaseC::increaseIntellect(int change) { intellect += change; validateStatistics(); }
+void BaseC::increaseVictoryPoints(int change) { VP += change; }
 
 // Decrement functions
 void BaseC::decreaseAge(int change) { age -= change; }
-void BaseC::decreaseStrength(int change) { str -= change; validateStatistics(); }
-void BaseC::decreaseStamina(int change) { sta -= change; validateStatistics(); }
-void BaseC::decreaseWisdom(int change) { wis -= change; validateStatistics(); }
-void BaseC::decreasePridePoints(int change) { PP -= change; }
+void BaseC::decreaseAttack(int change) { attack -= change; validateStatistics(); }
+void BaseC::decreaseDefense(int change) { defense -= change; validateStatistics(); }
+void BaseC::decreaseIntellect(int change) { intellect -= change; validateStatistics(); }
+void BaseC::decreaseVictoryPoints(int change) { VP -= change; }
 
 // Multiply functions
 void BaseC::multiplyAge(int factor) { age *= factor; }
-void BaseC::multiplyStrength(int factor) { str *= factor; validateStatistics(); }
-void BaseC::multiplyStamina(int factor) { sta *= factor; validateStatistics(); }
-void BaseC::multiplyWisdom(int factor) { wis *= factor; validateStatistics(); }
-void BaseC::multiplyPridePoints(int factor) { PP *= factor; }
+void BaseC::multiplyAttack(int factor) { attack *= factor; validateStatistics(); }
+void BaseC::multiplyDefense(int factor) { defense *= factor; validateStatistics(); }
+void BaseC::multiplyIntellect(int factor) { intellect *= factor; validateStatistics(); }
+void BaseC::multiplyVictoryPoints(int factor) { VP *= factor; }
 
 // Utility functions
 bool BaseC::isEven(int num) const {
@@ -59,54 +62,32 @@ bool BaseC::isEven(int num) const {
 }
 
 void BaseC::displayStats() const {
+    cout << "Name: " << name << endl;
     cout << "Age: " << age << "\n";
-    cout << "Strength: " << str << "\n";
-    cout  << "Stamina: " << sta << "\n";
-    cout  << "Wisdom: " << wis << "\n";
-    cout  << "Pride Points: " << PP << "\n";
+    cout << "Attack: " << attack << "\n";
+    cout << "Defense: " << defense << "\n";
+    cout << "Intellect: " << intellect << "\n";
+    cout << "Victory Points: " << VP << "\n";
 }
 
 void BaseC::resetStats() {
-    str = 100;
-    sta = 100;
-    wis = 100;
-    PP = 20000;
+    attack = 100;
+    defense = 100;
+    intellect = 100;
+    VP = 20000;
     validateStatistics();
-    cout << "Stats have been reset to Base values.\n";
+    cout << "Stats have been reset to base values.\n";
 }
 
-// Move the player to a new position
+// Placeholder functions
 void BaseC::moveToPosition(int position) {
-    // Implement movement logic with board later
     cout << "Player moves to position " << position << ".\n";
 }
 
-// Use an item
 void BaseC::useItem() {
-    if (itemCount > 0) {
-        cout << "Player uses an item.\n";
-        // Example item usage code, will likely implement picker menu and individual class that will work with tile. 
-        increaseStrength(50);
-        decreaseItemCount(1);
-    } else {
-        cout << "No items to use.\n";
-    }
+    cout << "Use item functionality (to be implemented).\n";
 }
-//Random attack method, will also again likely be modified to be used with board.
-void BaseC::attack(BaseC& opponent) {
-    cout << "Attacking opponent...\n";
 
-    //random  
-    srand((time(0))); // Seed random number generator
-    int outcome = rand() % 2; // Generates 0 or 1
-
-    if (outcome == 0) {
-        cout << "You win the attack!\n";
-        this->increasePridePoints(100);
-        opponent.decreasePridePoints(100);
-    } else {
-        cout << "You lose the attack!\n";
-        this->decreasePridePoints(100);
-        opponent.increasePridePoints(100);
-    }
+void BaseC::attackPlayer(BaseC opponent) {
+    cout << "Attack player functionality (to be implemented).\n";
 }

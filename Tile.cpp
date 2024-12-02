@@ -1,202 +1,248 @@
-#include <iostream>
-#include <cstdlib> 
-#include <ctime>
+// Tile.cpp
 #include "Tile.h"
+#include "Board.h"
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
-Tile::Tile(){
-    //Initialized variables like positon and color
-    //Will correspond each tile with a distinct color
+// Function prototypes for tile interactions
+void shopInteraction(BaseC &player);
+void fightInteraction(BaseC &player, vector<BaseC> &players, int currentPlayerIndex);
+void casinoInteraction(BaseC &player);
+
+Tile::Tile() {
+    color = 'G'; // Default color
+    position = 0;
 }
 
-void Tile::onStartTile(){
-//Will be automatically called for both players when the game begins
+int Tile::getType() {
+    if (color == 'G') // Green
+        return REGULAR_TILE;
+    else if (color == 'B') // Blue
+        return OASIS_TILE;
+    else if (color == 'P') // Pink
+        return COUNSELING_TILE;
+    else if (color == 'R') // Red
+        return GRAVEYARD_TILE;
+    else if (color == 'N') // Brown
+        return HYENAS_TILE;
+    else if (color == 'U') // Purple
+        return CHALLENGE_TILE;
+    else if (color == 'O') // Orange
+        return END_TILE;
+    else if (color == 'Y') // Grey
+        return START_TILE;
+    else if (color == 'S') // Cyan - Shop Tile
+        return SHOP_TILE;
+    else if (color == 'F') // Magenta - Fight Tile
+        return FIGHT_TILE;
+    else if (color == 'C') // Yellow - Casino Tile
+        return CASINO_TILE;
+    else
+        return -1; // Unknown type
 }
-void Tile::onEndTile(){
-//This will end the game and declare a winner.
-//It will print the rankings of the players within the terminal based on their stats/gameplay
-}
-void Tile::onChanceTile(){
-    cout<<"You landed on a chance tile! Pull a chance card? Y/N"<<endl;
-    char choice;
-    cin>>choice;
-    while(choice!='Y' || choice!='N'){
-        cout<<"That's not a proper input. Please try again:"<<endl;
-        cin>>choice;
+
+void Tile::triggerEffect(BaseC &player, Board &board, vector<BaseC> &players, int currentPlayerIndex, bool &endTurn) {
+    int move = 0; // For movement adjustments
+    switch (getType()) {
+        case REGULAR_TILE:
+            // Handle regular tile
+            cout << "You have landed on a regular tile." << endl;
+            // Implement random event affecting Victory Points
+            // Placeholder for random event
+            break;
+        case OASIS_TILE:
+            // Handle oasis tile
+            cout << "You have found a supply cache!" << endl;
+            // Increase player's stats
+            player.increaseAttack(200);
+            player.increaseDefense(200);
+            player.increaseIntellect(200);
+            cout << "Your Attack, Defense, and Intellect have each increased by 200." << endl;
+            // Grant extra turn
+            endTurn = false;
+            break;
+        case COUNSELING_TILE:
+            // Handle counseling tile
+            cout << "You have met a mentor!" << endl;
+            // Increase player's stats
+            player.increaseAttack(300);
+            player.increaseDefense(300);
+            player.increaseIntellect(300);
+            cout << "Your Attack, Defense, and Intellect have each increased by 300." << endl;
+            // Advisor selection or change (to be implemented)
+            break;
+        case GRAVEYARD_TILE:
+            // Handle graveyard tile
+            cout << "You have entered a dangerous battlefield!" << endl;
+            // Move back 10 tiles
+            board.movePlayer(currentPlayerIndex, -10);
+            cout << "You have been pushed back 10 spaces." << endl;
+            // Decrease stats
+            player.decreaseAttack(100);
+            player.decreaseDefense(100);
+            player.decreaseIntellect(100);
+            cout << "Your Attack, Defense, and Intellect have each decreased by 100." << endl;
+            break;
+        case HYENAS_TILE:
+            // Handle enemy ambush tile
+            cout << "You have been ambushed by enemies!" << endl;
+            // Return to previous position
+            cout << "You have been forced back to your previous position." << endl;
+            board.movePlayer(currentPlayerIndex, -1 * (board.getLastMove(currentPlayerIndex)));
+            // Decrease Defense
+            player.decreaseDefense(300);
+            cout << "Your Defense has decreased by 300." << endl;
+            break;
+        case CHALLENGE_TILE:
+            // Handle challenge tile
+            cout << "You have encountered a challenge!" << endl;
+            // Implement challenge (e.g., riddle)
+            // Placeholder for challenge
+            player.increaseIntellect(500);
+            cout << "You solved the challenge! Your Intellect increases by 500." << endl;
+            break;
+        case SHOP_TILE:
+            // Handle shop tile
+            shopInteraction(player);
+            break;
+        case FIGHT_TILE:
+            // Handle fight tile
+            fightInteraction(player, players, currentPlayerIndex);
+            break;
+        case CASINO_TILE:
+            // Handle casino tile
+            casinoInteraction(player);
+            break;
+        case END_TILE:
+            // Player has reached the end
+            cout << "You have reached the end of the board!" << endl;
+            // No action needed; handled in main loop
+            break;
+        default:
+            cout << "You have landed on an unknown tile." << endl;
+            break;
     }
-    if(choice=='Y'){
-        pullChanceCard();
+}
+
+// Function to handle Shop Tile interaction
+void shopInteraction(BaseC &player) {
+    cout << "Welcome to the Shop!" << endl;
+    cout << "You can spend Victory Points to increase your attributes." << endl;
+    cout << "1. Increase Attack by 100 (Cost: 500 Victory Points)" << endl;
+    cout << "2. Increase Defense by 100 (Cost: 500 Victory Points)" << endl;
+    cout << "3. Increase Intellect by 100 (Cost: 500 Victory Points)" << endl;
+    cout << "4. Exit Shop" << endl;
+    bool shopping = true;
+    while (shopping) {
+        cout << "Enter your choice: ";
+        int choice;
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                if (player.getVictoryPoints() >= 500) {
+                    player.decreaseVictoryPoints(500);
+                    player.increaseAttack(100);
+                    cout << "Attack increased by 100." << endl;
+                } else {
+                    cout << "Not enough Victory Points." << endl;
+                }
+                break;
+            case 2:
+                if (player.getVictoryPoints() >= 500) {
+                    player.decreaseVictoryPoints(500);
+                    player.increaseDefense(100);
+                    cout << "Defense increased by 100." << endl;
+                } else {
+                    cout << "Not enough Victory Points." << endl;
+                }
+                break;
+            case 3:
+                if (player.getVictoryPoints() >= 500) {
+                    player.decreaseVictoryPoints(500);
+                    player.increaseIntellect(100);
+                    cout << "Intellect increased by 100." << endl;
+                } else {
+                    cout << "Not enough Victory Points." << endl;
+                }
+                break;
+            case 4:
+                shopping = false;
+                break;
+            default:
+                cout << "Invalid choice." << endl;
+                break;
+        }
     }
-//Gives player a chance to either win or lose by pulling a chance "card"
 }
-void Tile::pullChanceCard(){
-    //pulls the chance card
-    //randomly selects a card that either helps/hurts the player
+
+// Function to handle Fight Tile interaction
+void fightInteraction(BaseC &player, vector<BaseC> &players, int currentPlayerIndex) {
+    cout << "You have landed on a Fight Tile!" << endl;
+    cout << "Would you like to challenge another player? (1 for Yes, 2 for No): ";
+    int choice;
+    cin >> choice;
+    if (choice == 1) {
+        cout << "Choose a player to fight:" << endl;
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerIndex) {
+                cout << i + 1 << ". " << players[i].getName() << endl;
+            }
+        }
+        int opponentIndex;
+        cin >> opponentIndex;
+        opponentIndex--; // Adjust for zero-based indexing
+        if (opponentIndex >= 0 && opponentIndex < players.size() && opponentIndex != currentPlayerIndex) {
+            BaseC &opponent = players[opponentIndex];
+            cout << "You challenge " << opponent.getName() << " to a fight!" << endl;
+            // Simple fight logic based on Attack and Defense
+            int playerPower = player.getAttack() + player.getDefense();
+            int opponentPower = opponent.getAttack() + opponent.getDefense();
+            if (playerPower > opponentPower) {
+                cout << "You win the fight!" << endl;
+                player.increaseVictoryPoints(1000);
+                opponent.decreaseVictoryPoints(1000);
+            } else if (playerPower < opponentPower) {
+                cout << "You lose the fight!" << endl;
+                player.decreaseVictoryPoints(1000);
+                opponent.increaseVictoryPoints(1000);
+            } else {
+                cout << "It's a tie!" << endl;
+                // No change in Victory Points
+            }
+        } else {
+            cout << "Invalid player selected." << endl;
+        }
+    } else {
+        cout << "You chose not to fight." << endl;
+    }
 }
-void Tile::onGambleTile(){
-    cout<<"You landed on a gamble tile! How much will you throw in to test your luck?"<<endl;
-    cout<<"0-1000:"<<endl;
+
+// Function to handle Casino Tile interaction
+void casinoInteraction(BaseC &player) {
+    cout << "Welcome to the Casino!" << endl;
+    cout << "You can gamble your Victory Points for a chance to win big!" << endl;
+    cout << "Enter the amount of Victory Points you want to gamble (0 to 1000): ";
     int amount;
     cin >> amount;
-    while(amount < 0 || amount > 1000){
-        cout<<"That's not within the range. Please try again:"<<endl;
+    while (amount < 0 || amount > 1000 || amount > player.getVictoryPoints()) {
+        cout << "Invalid amount. Please enter a value between 0 and " << min(1000, player.getVictoryPoints()) << ": ";
+        cin >> amount;
     }
-    gamble(amount);
-//Gives player opportunity to put points in with hopes of making some back
-//Also has an equal chance to make the player lose money
-}
-void Tile::gamble(int amount){
-    //runs a random number system to either increase/decrease the amount they decide to put in
-    //also could run a small game that involves them choosing a random number, closer to the number they get more money they get
-}
-void Tile::onFightTile(){
-    cout<<"Will you fight another player? Y/N"<<endl;
-    char choice;
-    while(choice!='Y' || choice!='N'){
-        cout<<"That's not a proper input. Please try again:"<<endl;
-        cin>>choice;
+    cout << "Rolling the dice..." << endl;
+    int outcome = rand() % 6 + 1; // Random number between 1 and 6
+    if (outcome <= 2) {
+        // Lose amount
+        player.decreaseVictoryPoints(amount);
+        cout << "You lost " << amount << " Victory Points." << endl;
+    } else if (outcome <= 4) {
+        // Win amount
+        player.increaseVictoryPoints(amount);
+        cout << "You won " << amount << " Victory Points!" << endl;
+    } else {
+        // Win double
+        player.increaseVictoryPoints(amount * 2);
+        cout << "Jackpot! You won " << amount * 2 << " Victory Points!" << endl;
     }
-    if(choice == 'Y'){
-        cout<<"Which player will you face?"<<endl;
-        int playerChoice;
-        cin >> playerChoice;
-        fightPlayer(playerChoice);
-    }
-//Gives player a chance to battle the other player in hopes of winning rewards
-//Battles will conspire based on their stats and how we will format battles
 }
-void Tile::fightPlayer(int playerChoice){
-
-}
-void Tile::onRiddleTile(){
-    cout<<"Answer this riddle to win rewards:"<<endl;
-//Using a text file, the player will be asked one of many riddles, something with a simple answer like a color or number 
-//Chance to win points/money
-}
-bool Tile::getTypeOfTile(int index){
-    if(index < 0 || index > 52){
-        return false;
-    }
-    //returns the type of file at the declared index
-    //type of tile will correspond to what color the tile is
-    //returns false if index is out of scope
-}
-
-
-/* Here, I originally wrote the tiles as individual classes. 
-May be an idea for later.
-I kept the idea due to it haivng some useful code.*/
-
-/*class StartTile{
-    private:
-        int position = 0;
-    public:
-    StartTile(){
-        position = 0;
-    }
-
-};
-class EndTile{
-    private:
-        int position = 52;
-    public:
-        EndTile(){
-            position = 52;
-        }
-
-};
-//a tile that the player can land on and "pull" a "card" that will either help or hurt them
-class ChanceTile{
-    private:
-        int num; //number that will dictate what "card" the player will pull
-    public:
-        ChanceTile(){
-            srand(time(0));
-            num = rand() % 6 + 1; //Generates number between 1 and 6
-            switch(num){
-                case(1):
-                case(2):
-                case(3):
-                case(4):
-                case(5):
-                case(6):
-            }
-        }
-};
-//a tile that the player can choose how many 
-//points they wish to put on the line in order to earn or lose points*/
-
-/*
-
-class GambleTile{
-    private:
-        int points;
-    public:
-        GambleTile(){
-            points = 0;
-        }
-        int gamble(int p){
-            //conditional to check whether p is a non-negative and less than the players max points
-            int 
-            srand(time(0));
-            int random = rand() % 5 + 1; //generates number between 1 and 5
-            switch(random){
-                case(1): //Lose 50% of their points gambled
-                case(2): //Lose 25% of their points gambled
-                case(3): //Player doesn't lose anything
-                case(4): //Gains 25% of their points gambled
-                case(5): //Gains 50% of their points gambled
-            }
-        }
-
-
-};
-class FightTile{
-    private:
-    public:
-        FightTile(){}
-        void fight(){
-            //the player can choose whether they want to fight the other player
-            //the stats of either player will decide who wins
-            //points are taken from loser and given to winner - amount of points will be decided
-        }
-};
-//this tile randomly pushes the character either 1-3 spots behind or 1-3 spots in front
-//these tiles will not be near the start or end tiles
-class RandomTile{
-    private:
-    public:
-        RandomTile(){
-            srand(time(0));
-            int num = rand() % 6 + 1;
-            switch(num){
-                case(1)://pushes back 3
-                case(2)://pushes back 2
-                case(3)://pushes back 1
-                case(4)://pushes forward 1
-                case(5)://pushes forward 2
-                case(6)://pushes forward 3
-            }
-        }
-};
-//this tile gives the player a chance to trade in points for other attribute points
-//may also give chances for the player to buy special items (possible inventory implementation)
-class ShopTile{
-    private:
-
-    public:
-        ShopTile(){
-            //gives the player a list of what they can buy
-        }
-};
-class BattleTile{
-    private:
-    public:
-        BattleTile(){
-            //gives the player a chance to battle the other player if they choose for a chance to win rewards
-            //will further add more attributes to the class for specifics
-        }
-};
-
-*/
