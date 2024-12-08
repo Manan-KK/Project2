@@ -219,6 +219,26 @@ void casinoInteraction(BaseC &player) {
     }
 }
 
+bool randomEvent(BaseC &player){
+    int chances = rand() % 20 + 1;
+    switch(chances){
+        case 1:
+            cout<<"A Necron fleet has been encountered!"<<endl;
+            if(player.getDefense() > 600){
+                cout<<"Your defense was able to hold them off! You savor your sweet victory. You gained 500 victory points." << endl;
+                player.increaseVictoryPoints(500);
+            }
+            break;
+        case 2:
+            cout<<""
+            break;
+        case 3:
+            break;
+        default:
+            return false;
+    }
+}
+
 Tile::Tile() {
     color = 'G'; // Default color
     position = 0;
@@ -257,6 +277,7 @@ void Tile::triggerEffect(BaseC &player, Board &board, vector<BaseC> &players, in
         case REGULAR_TILE:
             // Handle regular tile
             cout << "You have landed on a regular tile." << endl;
+            randomEvent();
             // Implement random event affecting Victory Points
             // Placeholder for random event
             break;
@@ -308,8 +329,13 @@ void Tile::triggerEffect(BaseC &player, Board &board, vector<BaseC> &players, in
             cout << "You have encountered a challenge!" << endl;
             // Implement challenge (e.g., riddle)
             // Placeholder for challenge
-            player.increaseIntellect(500);
-            cout << "You solved the challenge! Your Intellect increases by 500." << endl;
+            if(askedriddle(player)){
+                player.increaseIntellect(500);
+                cout << "You solved the challenge! Your Intellect increases by 500." << endl;
+            }
+            else{
+                cout << "Incorrect. Better luck next time." << endl;
+            }
             break;
         case SHOP_TILE:
             // Handle shop tile
