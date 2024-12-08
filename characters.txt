@@ -1,1 +1,5 @@
-
+SpaceMarine|30|500|500|200
+EldarFarseer|200|400|300|800
+OrkWarboss|25|700|600|100
+NecronOverlord|10000|600|700|300
+TauCommander|35|450|400|600
