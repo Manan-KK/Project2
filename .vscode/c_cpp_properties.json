@@ -3,18 +3,19 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/src/**",
                 "${workspaceFolder}/**",
-                "/usr/local/Cellar/wxmac/3.0.5.1/include/wx-3.0/**"
+                "${vcpkgRoot}/x64-osx/include",
+                "/usr/local/Cellar/wxmac/3.0.5/**"
             ],
             "defines": [],
             "macFrameworkPath": [
-                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
-            "cStandard": "c17",
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "${default}",
-            "compilerPath": "/usr/bin/g++"
+            "intelliSenseMode": "clang-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4
