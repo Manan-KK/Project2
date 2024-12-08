@@ -60,7 +60,7 @@ void shopInteraction(BaseC &player) {
 }
 
 // Function to handle riddles
-bool askedriddle(BaseC &player){
+bool riddle(Base &player){
     cout<<"Answer thy riddle:"<<endl;
     string chosenRiddle;
     ifstream file("riddles.txt");
@@ -107,7 +107,7 @@ bool askedriddle(BaseC &player){
                 break;
         }
     }
-    int riddle = rand() % 5 + 1;
+    riddle = rand() % 5 + 1;
     string answer;
     switch(riddle){
         case 1:
