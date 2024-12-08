@@ -3,6 +3,7 @@
 #include "Board.h"
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 
 using namespace std;
 
@@ -100,8 +101,13 @@ void Tile::triggerEffect(BaseC &player, Board &board, vector<BaseC> &players, in
             cout << "You have encountered a challenge!" << endl;
             // Implement challenge (e.g., riddle)
             // Placeholder for challenge
-            player.increaseIntellect(500);
-            cout << "You solved the challenge! Your Intellect increases by 500." << endl;
+            if(riddle(player)){
+                player.increaseIntellect(500);
+                cout << "You solved the challenge! Your Intellect increases by 500." << endl;
+            }
+            else{
+                cout<<"Not the correct answer. Better luck next time!"<<endl;
+            }
             break;
         case SHOP_TILE:
             // Handle shop tile
@@ -175,6 +181,96 @@ void shopInteraction(BaseC &player) {
                 break;
         }
     }
+}
+
+// Function to handle riddles
+bool riddle(Base &player){
+    cout<<"Answer thy riddle:"<<endl;
+    string chosenRiddle;
+    ifstream file("riddles.txt");
+    if(!file.is_open()){
+        cout<<"Error. Unable to open riddles file."<<endl;
+        return false;
+    }
+    string r1, r2, r3, r4, r5;
+    string answer1, answer2, answer3, answer4, answer5;
+    string line;
+    int placeholder = 0;
+    while(getline(file, line)){
+        swtich(placeholder){
+            placeholder++;
+            case 1:
+                r1 = line;
+                break;
+            case 2:
+                answer1 = line;
+                break;
+            case 3:
+                answer2 = line;
+                break;
+            case 4:
+                r2 = line;
+                break;
+            case 5:
+                answer3 = line;
+                break;
+            case 6:
+                r3 = line;
+                break;
+            case 7:
+                answer4 = line;
+                break;
+            case 8:
+                r4 = line;
+                break;
+            case 9:
+                answer5 = line;
+                break;
+            case 10:
+                r5 = line;
+                break;
+        }
+    }
+    riddle = rand() % 5 + 1;
+    string answer;
+    switch(riddle){
+        case 1:
+            cout<<r1<<endl;
+            cin>>answer;
+            if(answer==answer1){
+                return true;
+            }
+            break;
+        case 2:
+            cout<<r2<<endl;
+            cin>>answer;
+            if(answer==answer2){
+                return true;
+            }
+            break;
+        case 3:
+            cout<<r3<<endl;
+            cin>>answer;
+            if(answer==answer3){
+                return true;
+            }
+            break;
+        case 4:
+            cout<<r4<<endl;
+            cin>>answer;
+            if(answer==answer4){
+                return true;
+            }
+            break;
+        case 5:
+            cout<<r5<<endl;
+            cin>>answer;
+            if(answer==answer5){
+                return true;
+            }
+            break;
+    }
+    return false;
 }
 
 // Function to handle Fight Tile interaction
