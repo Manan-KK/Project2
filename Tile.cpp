@@ -230,7 +230,7 @@ bool randomEvent(BaseC &player){
             }
             break;
         case 2:
-            cout<<""
+            cout<<""<<endl;
             break;
         case 3:
             break;
@@ -277,7 +277,7 @@ void Tile::triggerEffect(BaseC &player, Board &board, vector<BaseC> &players, in
         case REGULAR_TILE:
             // Handle regular tile
             cout << "You have landed on a regular tile." << endl;
-            randomEvent();
+            randomEvent(player);
             // Implement random event affecting Victory Points
             // Placeholder for random event
             break;
