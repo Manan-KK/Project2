@@ -84,10 +84,6 @@ void BaseC::moveToPosition(int position) {
     cout << "Player moves to position " << position << ".\n";
 }
 
-void BaseC::useItem() {
-    cout << "Use item functionality (to be implemented).\n";
-}
-
 void BaseC::attackPlayer(BaseC opponent) {
     cout << "Attack player functionality (to be implemented).\n";
 }
