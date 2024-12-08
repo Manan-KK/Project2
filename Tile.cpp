@@ -3,13 +3,221 @@
 #include "Board.h"
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
-// Function prototypes for tile interactions
-void shopInteraction(BaseC &player);
-void fightInteraction(BaseC &player, vector<BaseC> &players, int currentPlayerIndex);
-void casinoInteraction(BaseC &player);
+// Function to handle Shop Tile interaction
+void shopInteraction(BaseC &player) {
+    cout << "Welcome to the Shop!" << endl;
+    cout << "You can spend Victory Points to increase your attributes." << endl;
+    cout << "1. Increase Attack by 100 (Cost: 500 Victory Points)" << endl;
+    cout << "2. Increase Defense by 100 (Cost: 500 Victory Points)" << endl;
+    cout << "3. Increase Intellect by 100 (Cost: 500 Victory Points)" << endl;
+    cout << "4. Exit Shop" << endl;
+    bool shopping = true;
+    while (shopping) {
+        cout << "Enter your choice: ";
+        int choice;
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                if (player.getVictoryPoints() >= 500) {
+                    player.decreaseVictoryPoints(500);
+                    player.increaseAttack(100);
+                    cout << "Attack increased by 100." << endl;
+                } else {
+                    cout << "Not enough Victory Points." << endl;
+                }
+                break;
+            case 2:
+                if (player.getVictoryPoints() >= 500) {
+                    player.decreaseVictoryPoints(500);
+                    player.increaseDefense(100);
+                    cout << "Defense increased by 100." << endl;
+                } else {
+                    cout << "Not enough Victory Points." << endl;
+                }
+                break;
+            case 3:
+                if (player.getVictoryPoints() >= 500) {
+                    player.decreaseVictoryPoints(500);
+                    player.increaseIntellect(100);
+                    cout << "Intellect increased by 100." << endl;
+                } else {
+                    cout << "Not enough Victory Points." << endl;
+                }
+                break;
+            case 4:
+                shopping = false;
+                break;
+            default:
+                cout << "Invalid choice." << endl;
+                break;
+        }
+    }
+}
+
+// Function to handle riddles
+bool riddle(Base &player){
+    cout<<"Answer thy riddle:"<<endl;
+    string chosenRiddle;
+    ifstream file("riddles.txt");
+    if(!file.is_open()){
+        cout<<"Error. Unable to open riddles file."<<endl;
+        return false;
+    }
+    string r1, r2, r3, r4, r5;
+    string answer1, answer2, answer3, answer4, answer5;
+    string line;
+    int placeholder = 0;
+    while(getline(file, line)){
+        swtich(placeholder){
+            placeholder++;
+            case 1:
+                r1 = line;
+                break;
+            case 2:
+                answer1 = line;
+                break;
+            case 3:
+                answer2 = line;
+                break;
+            case 4:
+                r2 = line;
+                break;
+            case 5:
+                answer3 = line;
+                break;
+            case 6:
+                r3 = line;
+                break;
+            case 7:
+                answer4 = line;
+                break;
+            case 8:
+                r4 = line;
+                break;
+            case 9:
+                answer5 = line;
+                break;
+            case 10:
+                r5 = line;
+                break;
+        }
+    }
+    riddle = rand() % 5 + 1;
+    string answer;
+    switch(riddle){
+        case 1:
+            cout<<r1<<endl;
+            cin>>answer;
+            if(answer==answer1){
+                return true;
+            }
+            break;
+        case 2:
+            cout<<r2<<endl;
+            cin>>answer;
+            if(answer==answer2){
+                return true;
+            }
+            break;
+        case 3:
+            cout<<r3<<endl;
+            cin>>answer;
+            if(answer==answer3){
+                return true;
+            }
+            break;
+        case 4:
+            cout<<r4<<endl;
+            cin>>answer;
+            if(answer==answer4){
+                return true;
+            }
+            break;
+        case 5:
+            cout<<r5<<endl;
+            cin>>answer;
+            if(answer==answer5){
+                return true;
+            }
+            break;
+    }
+    return false;
+}
+
+// Function to handle Fight Tile interaction
+void fightInteraction(BaseC &player, vector<BaseC> &players, int currentPlayerIndex) {
+    cout << "You have landed on a Fight Tile!" << endl;
+    cout << "Would you like to challenge another player? (1 for Yes, 2 for No): ";
+    int choice;
+    cin >> choice;
+    if (choice == 1) {
+        cout << "Choose a player to fight:" << endl;
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerIndex) {
+                cout << i + 1 << ". " << players[i].getName() << endl;
+            }
+        }
+        int opponentIndex;
+        cin >> opponentIndex;
+        opponentIndex--; // Adjust for zero-based indexing
+        if (opponentIndex >= 0 && opponentIndex < players.size() && opponentIndex != currentPlayerIndex) {
+            BaseC &opponent = players[opponentIndex];
+            cout << "You challenge " << opponent.getName() << " to a fight!" << endl;
+            // Simple fight logic based on Attack and Defense
+            int playerPower = player.getAttack() + player.getDefense();
+            int opponentPower = opponent.getAttack() + opponent.getDefense();
+            if (playerPower > opponentPower) {
+                cout << "You win the fight!" << endl;
+                player.increaseVictoryPoints(1000);
+                opponent.decreaseVictoryPoints(1000);
+            } else if (playerPower < opponentPower) {
+                cout << "You lose the fight!" << endl;
+                player.decreaseVictoryPoints(1000);
+                opponent.increaseVictoryPoints(1000);
+            } else {
+                cout << "It's a tie!" << endl;
+                // No change in Victory Points
+            }
+        } else {
+            cout << "Invalid player selected." << endl;
+        }
+    } else {
+        cout << "You chose not to fight." << endl;
+    }
+}
+
+// Function to handle Casino Tile interaction
+void casinoInteraction(BaseC &player) {
+    cout << "Welcome to the Casino!" << endl;
+    cout << "You can gamble your Victory Points for a chance to win big!" << endl;
+    cout << "Enter the amount of Victory Points you want to gamble (0 to 1000): ";
+    int amount;
+    cin >> amount;
+    while (amount < 0 || amount > 1000 || amount > player.getVictoryPoints()) {
+        cout << "Invalid amount. Please enter a value between 0 and " << min(1000, player.getVictoryPoints()) << ": ";
+        cin >> amount;
+    }
+    cout << "Rolling the dice..." << endl;
+    int outcome = rand() % 6 + 1; // Random number between 1 and 6
+    if (outcome <= 2) {
+        // Lose amount
+        player.decreaseVictoryPoints(amount);
+        cout << "You lost " << amount << " Victory Points." << endl;
+    } else if (outcome <= 4) {
+        // Win amount
+        player.increaseVictoryPoints(amount);
+        cout << "You won " << amount << " Victory Points!" << endl;
+    } else {
+        // Win double
+        player.increaseVictoryPoints(amount * 2);
+        cout << "Jackpot! You won " << amount * 2 << " Victory Points!" << endl;
+    }
+}
 
 Tile::Tile() {
     color = 'G'; // Default color
@@ -126,123 +334,3 @@ void Tile::triggerEffect(BaseC &player, Board &board, vector<BaseC> &players, in
     }
 }
 
-// Function to handle Shop Tile interaction
-void shopInteraction(BaseC &player) {
-    cout << "Welcome to the Shop!" << endl;
-    cout << "You can spend Victory Points to increase your attributes." << endl;
-    cout << "1. Increase Attack by 100 (Cost: 500 Victory Points)" << endl;
-    cout << "2. Increase Defense by 100 (Cost: 500 Victory Points)" << endl;
-    cout << "3. Increase Intellect by 100 (Cost: 500 Victory Points)" << endl;
-    cout << "4. Exit Shop" << endl;
-    bool shopping = true;
-    while (shopping) {
-        cout << "Enter your choice: ";
-        int choice;
-        cin >> choice;
-        switch (choice) {
-            case 1:
-                if (player.getVictoryPoints() >= 500) {
-                    player.decreaseVictoryPoints(500);
-                    player.increaseAttack(100);
-                    cout << "Attack increased by 100." << endl;
-                } else {
-                    cout << "Not enough Victory Points." << endl;
-                }
-                break;
-            case 2:
-                if (player.getVictoryPoints() >= 500) {
-                    player.decreaseVictoryPoints(500);
-                    player.increaseDefense(100);
-                    cout << "Defense increased by 100." << endl;
-                } else {
-                    cout << "Not enough Victory Points." << endl;
-                }
-                break;
-            case 3:
-                if (player.getVictoryPoints() >= 500) {
-                    player.decreaseVictoryPoints(500);
-                    player.increaseIntellect(100);
-                    cout << "Intellect increased by 100." << endl;
-                } else {
-                    cout << "Not enough Victory Points." << endl;
-                }
-                break;
-            case 4:
-                shopping = false;
-                break;
-            default:
-                cout << "Invalid choice." << endl;
-                break;
-        }
-    }
-}
-
-// Function to handle Fight Tile interaction
-void fightInteraction(BaseC &player, vector<BaseC> &players, int currentPlayerIndex) {
-    cout << "You have landed on a Fight Tile!" << endl;
-    cout << "Would you like to challenge another player? (1 for Yes, 2 for No): ";
-    int choice;
-    cin >> choice;
-    if (choice == 1) {
-        cout << "Choose a player to fight:" << endl;
-        for (int i = 0; i < players.size(); i++) {
-            if (i != currentPlayerIndex) {
-                cout << i + 1 << ". " << players[i].getName() << endl;
-            }
-        }
-        int opponentIndex;
-        cin >> opponentIndex;
-        opponentIndex--; // Adjust for zero-based indexing
-        if (opponentIndex >= 0 && opponentIndex < players.size() && opponentIndex != currentPlayerIndex) {
-            BaseC &opponent = players[opponentIndex];
-            cout << "You challenge " << opponent.getName() << " to a fight!" << endl;
-            // Simple fight logic based on Attack and Defense
-            int playerPower = player.getAttack() + player.getDefense();
-            int opponentPower = opponent.getAttack() + opponent.getDefense();
-            if (playerPower > opponentPower) {
-                cout << "You win the fight!" << endl;
-                player.increaseVictoryPoints(1000);
-                opponent.decreaseVictoryPoints(1000);
-            } else if (playerPower < opponentPower) {
-                cout << "You lose the fight!" << endl;
-                player.decreaseVictoryPoints(1000);
-                opponent.increaseVictoryPoints(1000);
-            } else {
-                cout << "It's a tie!" << endl;
-                // No change in Victory Points
-            }
-        } else {
-            cout << "Invalid player selected." << endl;
-        }
-    } else {
-        cout << "You chose not to fight." << endl;
-    }
-}
-
-// Function to handle Casino Tile interaction
-void casinoInteraction(BaseC &player) {
-    cout << "Welcome to the Casino!" << endl;
-    cout << "You can gamble your Victory Points for a chance to win big!" << endl;
-    cout << "Enter the amount of Victory Points you want to gamble (0 to 1000): ";
-    int amount;
-    cin >> amount;
-    while (amount < 0 || amount > 1000 || amount > player.getVictoryPoints()) {
-        cout << "Invalid amount. Please enter a value between 0 and " << min(1000, player.getVictoryPoints()) << ": ";
-        cin >> amount;
-    }
-    cout << "Rolling the dice..." << endl;
-    int outcome = rand() % 6 + 1; // Random number between 1 and 6
-    if (outcome <= 2) {
-        // Lose amount
-        player.decreaseVictoryPoints(amount);
-        cout << "You lost " << amount << " Victory Points." << endl;
-    } else if (outcome <= 4) {
-        // Win amount
-        player.increaseVictoryPoints(amount);
-        cout << "You won " << amount << " Victory Points!" << endl;
-    } else {
-        // Win double
-        player.increaseVictoryPoints(amount * 2);
-        cout << "Jackpot! You won " << amount * 2 << " Victory Points!" << endl;
-    }
-}
