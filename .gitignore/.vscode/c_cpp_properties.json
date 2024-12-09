@@ -3,10 +3,10 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/Source/**"                
+                "${workspaceFolder}/**"
             ],
-            "compilerPath": "C:\\mingw-w64\\mingw64\\bin\\gcc.exe",
-            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+            "intelliSenseMode": "${default}",
             "browse": {
                 "path": [
                     "${workspaceFolder}"

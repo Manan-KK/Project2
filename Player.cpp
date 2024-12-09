@@ -1,93 +1,92 @@
-// Player.cpp
 #include "Player.h"
 #include <iostream>
-
 using namespace std;
 
-// Constructor
-BaseC::BaseC(string name, int age, int attack, int defense, int intellect, int VP)
-    : name(name), age(age), attack(attack), defense(defense), intellect(intellect), VP(VP) {
-    validateStatistics();
+Player::Player() {
+    name="Unknown";
+    age=0;
+    might=500;
+    endurance=500;
+    cunning=500;
+    honor=20000;
+    pathType=0;
+    advisor=0;
+    validateStats();
 }
 
-// Helper function to validate and reset statistics
-void BaseC::validateStatistics() {
-    if (attack < 100) attack = 100;
-    if (defense < 100) defense = 100;
-    if (intellect < 100) intellect = 100;
+Player::Player(string n, int a, int m, int e, int c, int h) {
+    name=n;
+    age=a;
+    might=m;
+    endurance=e;
+    cunning=c;
+    honor=h;
+    pathType=0;
+    advisor=0;
+    validateStats();
 }
 
-// Getter functions
-string BaseC::getName() const { return name; }
-int BaseC::getAge() const { return age; }
-int BaseC::getAttack() const { return attack; }
-int BaseC::getDefense() const { return defense; }
-int BaseC::getIntellect() const { return intellect; }
-int BaseC::getVictoryPoints() const { return VP; }
-int BaseC::getPathType() const { return pathType; }
-
-// Setter functions
-void BaseC::setName(string newName) { name = newName; }
-void BaseC::setAge(int newAge) { age = newAge; }
-void BaseC::setAttack(int newAttack) { attack = newAttack; validateStatistics(); }
-void BaseC::setDefense(int newDefense) { defense = newDefense; validateStatistics(); }
-void BaseC::setIntellect(int newIntellect) { intellect = newIntellect; validateStatistics(); }
-void BaseC::setVictoryPoints(int newVP) { VP = newVP; }
-void BaseC::setPathType(int path) { pathType = path; }
-
-// Increment functions
-void BaseC::increaseAge(int change) { age += change; }
-void BaseC::increaseAttack(int change) { attack += change; validateStatistics(); }
-void BaseC::increaseDefense(int change) { defense += change; validateStatistics(); }
-void BaseC::increaseIntellect(int change) { intellect += change; validateStatistics(); }
-void BaseC::increaseVictoryPoints(int change) { VP += change; }
-
-// Decrement functions
-void BaseC::decreaseAge(int change) { age -= change; }
-void BaseC::decreaseAttack(int change) { attack -= change; validateStatistics(); }
-void BaseC::decreaseDefense(int change) { defense -= change; validateStatistics(); }
-void BaseC::decreaseIntellect(int change) { intellect -= change; validateStatistics(); }
-void BaseC::decreaseVictoryPoints(int change) { VP -= change; }
-
-// Multiply functions
-void BaseC::multiplyAge(int factor) { age *= factor; }
-void BaseC::multiplyAttack(int factor) { attack *= factor; validateStatistics(); }
-void BaseC::multiplyDefense(int factor) { defense *= factor; validateStatistics(); }
-void BaseC::multiplyIntellect(int factor) { intellect *= factor; validateStatistics(); }
-void BaseC::multiplyVictoryPoints(int factor) { VP *= factor; }
-
-// Utility functions
-bool BaseC::isEven(int num) const {
-    return num % 2 == 0;
+void Player::validateStats(){
+    if(might<100) might=100;
+    if(endurance<100) endurance=100;
+    if(cunning<100) cunning=100;
 }
 
-void BaseC::displayStats() const {
-    cout << "Name: " << name << endl;
-    cout << "Age: " << age << "\n";
-    cout << "Attack: " << attack << "\n";
-    cout << "Defense: " << defense << "\n";
-    cout << "Intellect: " << intellect << "\n";
-    cout << "Victory Points: " << VP << "\n";
+string Player::getName() const{return name;}
+int Player::getAge() const{return age;}
+int Player::getMight() const{return might;}
+int Player::getEndurance() const{return endurance;}
+int Player::getCunning() const{return cunning;}
+int Player::getHonor() const{return honor;}
+int Player::getPathType() const{return pathType;}
+int Player::getAdvisor() const{return advisor;}
+
+void Player::setName(string n){name=n;}
+void Player::setAge(int a){age=a;}
+void Player::setMight(int m){might=m;validateStats();}
+void Player::setEndurance(int d){endurance=d;validateStats();}
+void Player::setCunning(int c){cunning=c;validateStats();}
+void Player::setHonor(int h){honor=h;}
+void Player::setPathType(int p){pathType=p;}
+void Player::setAdvisor(int adv){advisor=adv;}
+
+void Player::incMight(int x){might+=x;validateStats();}
+void Player::incEndurance(int x){endurance+=x;validateStats();}
+void Player::incCunning(int x){cunning+=x;validateStats();}
+void Player::incHonor(int x){honor+=x;}
+
+void Player::decMight(int x){might-=x;validateStats();}
+void Player::decEndurance(int x){endurance-=x;validateStats();}
+void Player::decCunning(int x){cunning-=x;validateStats();}
+void Player::decHonor(int x){honor-=x;}
+
+void Player::displayStats() const {
+    cout<<"Name: "<<name<<endl;
+    cout<<"Age: "<<age<<endl;
+    cout<<"Might: "<<might<<endl;
+    cout<<"Endurance: "<<endurance<<endl;
+    cout<<"Cunning: "<<cunning<<endl;
+    cout<<"Honor: "<<honor<<endl;
+    cout<<"Path: "<<(pathType==0?"Chapter Training Grounds":"Frontline Deployment")<<endl;
+    cout<<"Advisor: ";
+    switch(advisor){
+        case 1: cout<<"Chapter Master";break;
+        case 2: cout<<"Ethereal";break;
+        case 3: cout<<"Ork Mek";break;
+        case 4: cout<<"Eldar Farseer";break;
+        case 5: cout<<"Necron Cryptek";break;
+        default: cout<<"None";break;
+    }
+    cout<<endl;
 }
 
-void BaseC::resetStats() {
-    attack = 100;
-    defense = 100;
-    intellect = 100;
-    VP = 20000;
-    validateStatistics();
-    cout << "Stats have been reset to base values.\n";
+void Player::resetStats(){
+    might=100;endurance=100;cunning=100;honor=20000;
+    validateStats();
 }
 
-// Placeholder functions
-void BaseC::moveToPosition(int position) {
-    cout << "Player moves to position " << position << ".\n";
-}
-
-void BaseC::useItem() {
-    cout << "Use item functionality (to be implemented).\n";
-}
-
-void BaseC::attackPlayer(BaseC opponent) {
-    cout << "Attack player functionality (to be implemented).\n";
+void Player::convertTraitsToHonor(){
+    int total=might+endurance+cunning;
+    int chunks=total/100;
+    incHonor(chunks*1000);
 }

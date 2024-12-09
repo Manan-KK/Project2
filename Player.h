@@ -1,77 +1,57 @@
-// Player.h
 #ifndef PLAYER_H
 #define PLAYER_H
 
 #include <string>
-
 using namespace std;
 
-class BaseC {
+class Player {
 private:
     string name;
     int age;
-    int attack;
-    int defense;
-    int intellect;
-    int VP; // Victory Points
+    int might;
+    int endurance;
+    int cunning;
+    int honor;
+    int pathType; 
+    int advisor;  
 
-    int pathType; // 0 for Specialized Training, 1 for Straight to Battlefront
-
-    // Helper function to validate and reset statistics
-    void validateStatistics();
+    void validateStats();
 
 public:
-    // Constructor
-    BaseC(string name, int age, int attack, int defense, int intellect, int VP = 20000);
+    Player();
+    Player(string n, int a, int m, int e, int c, int h=20000);
 
-    // Getter functions
     string getName() const;
     int getAge() const;
-    int getAttack() const;
-    int getDefense() const;
-    int getIntellect() const;
-    int getVictoryPoints() const;
+    int getMight() const;
+    int getEndurance() const;
+    int getCunning() const;
+    int getHonor() const;
     int getPathType() const;
+    int getAdvisor() const;
 
-    // Setter functions
-    void setName(string newName);
-    void setAge(int newAge);
-    void setAttack(int newAttack);
-    void setDefense(int newDefense);
-    void setIntellect(int newIntellect);
-    void setVictoryPoints(int newVP);
-    void setPathType(int path);
+    void setName(string n);
+    void setAge(int a);
+    void setMight(int m);
+    void setEndurance(int d);
+    void setCunning(int c);
+    void setHonor(int h);
+    void setPathType(int p);
+    void setAdvisor(int adv);
 
-    // Increment functions
-    void increaseAge(int change);
-    void increaseAttack(int change);
-    void increaseDefense(int change);
-    void increaseIntellect(int change);
-    void increaseVictoryPoints(int change);
+    void incMight(int x);
+    void incEndurance(int x);
+    void incCunning(int x);
+    void incHonor(int x);
 
-    // Decrement functions
-    void decreaseAge(int change);
-    void decreaseAttack(int change);
-    void decreaseDefense(int change);
-    void decreaseIntellect(int change);
-    void decreaseVictoryPoints(int change);
+    void decMight(int x);
+    void decEndurance(int x);
+    void decCunning(int x);
+    void decHonor(int x);
 
-    // Multiply Functions
-    void multiplyAge(int factor);
-    void multiplyAttack(int factor);
-    void multiplyDefense(int factor);
-    void multiplyIntellect(int factor);
-    void multiplyVictoryPoints(int factor);
-
-    // Utility functions
-    bool isEven(int num) const;
-    void displayStats() const; // Display player's current stats
-    void resetStats();         // Reset stats to default values
-
-    // Placeholder for future functions
-    void moveToPosition(int position); // Move player to a new position
-    void useItem();                    // Use an item
-    void attackPlayer(BaseC opponent); // Attack another player
+    void displayStats() const;
+    void resetStats();
+    void convertTraitsToHonor();
 };
 
 #endif

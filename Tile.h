@@ -1,12 +1,13 @@
-// Tile.h
 #ifndef TILE_H
 #define TILE_H
 
-#include <iostream>
-#include <vector>
-#include "Player.h"
-
-using namespace std;
+class Tile {
+public:
+    char color;
+    int position;
+    Tile();
+    int getType() const;
+};
 
 #define REGULAR_TILE 0
 #define OASIS_TILE 1
@@ -19,16 +20,5 @@ using namespace std;
 #define SHOP_TILE 8
 #define FIGHT_TILE 9
 #define CASINO_TILE 10
-
-class Board; // Forward declaration to resolve circular dependency
-
-class Tile {
-public:
-    char color;
-    int position;
-    Tile();
-    int getType();
-    void triggerEffect(BaseC &player, Board &board, vector<BaseC> &players, int currentPlayerIndex, bool &endTurn);
-};
 
 #endif
