@@ -9,15 +9,33 @@
 
 using namespace std;
 
-void loadCharacters(string filename, string names[], int ages[], int mights[], int ends[], int cunnings[], int count) {
+struct LoadResult {
+    int count;
+    bool success;
+};
+
+
+
+// No filenames as parameters, no references
+LoadResult loadCharacters(string names[], int ages[], int mights[], int ends[], int cunnings[]) {
+    LoadResult result;
+    result.count = 0;
+    result.success = false;
+
+    string filename = "characters.txt"; 
     ifstream file(filename.c_str());
-    count = 0;
-    if(!file.is_open()) return;
+    if(!file.is_open()) {
+        cout << "[ERROR] Could not open characters.txt for reading characters.\n";
+        return result;
+    }
+
+    cout << "[INFO] Loading characters from characters.txt\n";
     string line;
     while(getline(file,line)) {
         if(line=="") continue;
         string tokens[5];
         int tokenCount=0;
+
         {
             string current="";
             for (int i = 0; i<(int)line.size(); i++) {
@@ -40,23 +58,36 @@ void loadCharacters(string filename, string names[], int ages[], int mights[], i
             }
         }
 
-        if(tokenCount==5){
-            names[count]=tokens[0];
-            ages[count]=stoi(tokens[1]);
-            mights[count]=stoi(tokens[2]);
-            ends[count]=stoi(tokens[3]);
-            cunnings[count]=stoi(tokens[4]);
-            count++;
-            if(count>=20) break;
+        if(tokenCount==5) {
+            names[result.count] = tokens[0];
+            ages[result.count] = stoi(tokens[1]);
+            mights[result.count] = stoi(tokens[2]);
+            ends[result.count] = stoi(tokens[3]);
+            cunnings[result.count] = stoi(tokens[4]);
+            result.count++;
+            if(result.count>=20) break;
         }
     }
     file.close();
+
+    result.success = true;
+    cout << "[INFO] Successfully loaded " << result.count << " characters.\n";
+    return result;
 }
 
-void loadRandomEvents(string filename, RandomEvent events[], int count) {
+LoadResult loadRandomEvents(RandomEvent events[]) {
+    LoadResult result;
+    result.count=0;
+    result.success=false;
+
+    string filename = "random_events.txt"; 
     ifstream file(filename.c_str());
-    count=0;
-    if(!file.is_open()) return;
+    if(!file.is_open()) {
+        cout << "[ERROR] Could not open random_events.txt for reading random events.\n";
+        return result;
+    }
+
+    cout << "[INFO] Loading random events from random_events.txt\n";
     string line;
     while(getline(file,line)){
         if(line=="") continue;
@@ -85,85 +116,102 @@ void loadRandomEvents(string filename, RandomEvent events[], int count) {
         }
 
         if(tokenCount==4){
-            events[count].description=tokens[0];
-            events[count].pathType=stoi(tokens[1]);
-            events[count].advisor=stoi(tokens[2]);
-            events[count].honorChange=stoi(tokens[3]);
-            count++;
-            if(count>=100) break;
+            events[result.count].description=tokens[0];
+            events[result.count].pathType=stoi(tokens[1]);
+            events[result.count].advisor=stoi(tokens[2]);
+            events[result.count].honorChange=stoi(tokens[3]);
+            result.count++;
+            if(result.count>=100) break;
         }
     }
     file.close();
+    result.success = true;
+    cout << "[INFO] Successfully loaded " << result.count << " random events.\n";
+    return result;
 }
 
-void loadRiddles(string filename, Riddle riddles[], int count) {
+LoadResult loadRiddles(Riddle riddles[]) {
+    LoadResult result;
+    result.count=0;
+    result.success=false;
+
+    string filename = "riddles.txt"; 
     ifstream file(filename.c_str());
-    count=0;
-    if(!file.is_open()) return;
+    if(!file.is_open()) {
+        cout << "[ERROR] Could not open riddles.txt for reading riddles.\n";
+        return result;
+    }
+
+    cout << "[INFO] Loading riddles from riddles.txt\n";
     while(true){
         string questionLine, answerLine;
         if(!getline(file,questionLine)) break;
         if(!getline(file,answerLine)) break;
         if(questionLine=="" || answerLine=="") break;
-        riddles[count].question=questionLine;
-        riddles[count].answer=answerLine;
-        count++;
-        if(count>=50) break;
+        riddles[result.count].question=questionLine;
+        riddles[result.count].answer=answerLine;
+        result.count++;
+        if(result.count>=50) break;
     }
     file.close();
+    result.success = true;
+    cout << "[INFO] Successfully loaded " << result.count << " riddles.\n";
+    return result;
 }
 
-int main(){
+int main() {
     srand((unsigned)time(0));
     const int MAX_PLAYERS=4;
     int numPlayers;
-    cout<<"=========================================\n"
-        <<"Welcome to the Warhammer 40K Honor Trial!\n"
-        <<"=========================================\n"
-        <<"Enter number of players (1-4): ";
-    cin>>numPlayers;
+
+    cout << "=========================================\n"
+         << "Welcome to the Warhammer 40K Honor Trial!\n"
+         << "=========================================\n"
+         << "Enter number of players (1-4): ";
+    cin >> numPlayers;
     while(numPlayers<1||numPlayers>MAX_PLAYERS){
-        cout<<"Invalid number. Enter 1-4: ";
-        cin>>numPlayers;
+        cout << "Invalid number. Enter 1-4: ";
+        cin >> numPlayers;
     }
 
     Board gameBoard(numPlayers);
     Player players[MAX_PLAYERS];
 
-    string cNames[20];int cAges[20];int cMight[20];int cEnd[20];int cCunn[20];int charCount=0;
-    for(int i=0;i<20;i++){cNames[i]="";}
-    loadCharacters("characters.txt",cNames,cAges,cMight,cEnd,cCunn,charCount);
-    bool chosenCharacters[20];
-    for(int i=0;i<20;i++) chosenCharacters[i]=false;
+    string cNames[20]; 
+    int cAges[20], cMight[20], cEnd[20], cCunn[20];
+    for(int i=0;i<20;i++) cNames[i]="";
 
-    for(int playerIndex=0;playerIndex<numPlayers;playerIndex++){
-        cout<<"\nPlayer "<<playerIndex+1<<", enter your IRL name: ";
-        string pName;cin>>pName;
+    LoadResult charRes = loadCharacters(cNames, cAges, cMight, cEnd, cCunn);
+    if(!charRes.success) {
+        cout << "[WARN] Characters not loaded correctly. The game might have limited character options.\n";
+    }
 
-        cout<<"\nAvailable characters:\n";
-        for(int c=0;c<charCount;c++){
-            if(!chosenCharacters[c]) cout<<c+1<<"."<<cNames[c]<<endl;
+    for(int playerIndex=0; playerIndex<numPlayers; playerIndex++){
+        cout << "\nPlayer " << playerIndex+1 << ", enter your name: ";
+        string pName; cin >> pName;
+
+        cout << "\nAvailable characters:\n";
+        for(int c=0;c<charRes.count;c++){
+            cout << c+1 << "." << cNames[c] << endl;
         }
-        cout<<"Choose a character by number: ";
-        int characterChoice;cin>>characterChoice;
+        cout << "Choose a character by number: ";
+        int characterChoice; cin >> characterChoice;
         characterChoice--;
-        while(characterChoice<0||characterChoice>=charCount||chosenCharacters[characterChoice]){
-            cout<<"Invalid. Choose again: ";
-            cin>>characterChoice;characterChoice--;
+        while(characterChoice<0||characterChoice>=charRes.count){
+            cout << "Invalid. Choose again: ";
+            cin >> characterChoice; characterChoice--;
         }
-        chosenCharacters[characterChoice]=true;
-        Player p(cNames[characterChoice], cAges[characterChoice],
-                 cMight[characterChoice], cEnd[characterChoice],
-                 cCunn[characterChoice], 20000);
 
-        cout<<"\nChoose your path:\n"
-            <<"1. Chapter Training Grounds(-5000 Honor,+500M/+500E/+1000C)\n"
-            <<"2. Frontline(+5000 Honor,+200 all)\n"
-            <<"Your choice: ";
-        int pathChoice;cin>>pathChoice;
+        Player p(cNames[characterChoice], cAges[characterChoice], cMight[characterChoice], cEnd[characterChoice], cCunn[characterChoice], 20000);
+
+        cout << "\nChoose your path:\n"
+             << "1. Chapter Training Grounds(-5000 Honor,+500M/+500E/+1000C)\n"
+             << "2. Frontline(+5000 Honor,+200 all)\n"
+             << "Your choice: ";
+        int pathChoice; cin >> pathChoice;
         while(pathChoice!=1&&pathChoice!=2){
-            cout<<"Invalid.\n";
-            cin>>pathChoice;
+            cout << "Invalid.\n";
+            cin >> pathChoice;
         }
         if(pathChoice==1){
             p.decHonor(5000);
@@ -171,9 +219,9 @@ int main(){
             p.incEndurance(500);
             p.incCunning(1000);
             p.setPathType(0);
-            cout<<"Initial advisor selection:\n";
-            cout<<"1. Chapter Master\n2. Ethereal\n3. Ork Mek\n4. Eldar Farseer\n5. Necron Cryptek\n0. None\nChoice: ";
-            int advChoice;cin>>advChoice;
+            cout << "Initial advisor selection:\n"
+                 << "1. Chapter Master\n2. Ethereal\n3. Ork Mek\n4. Eldar Farseer\n5. Necron Cryptek\n0. None\nChoice: ";
+            int advChoice; cin >> advChoice;
             if(advChoice<0||advChoice>5) advChoice=0;
             if(advChoice!=0)p.setAdvisor(advChoice);
         } else {
@@ -185,15 +233,21 @@ int main(){
         }
         gameBoard.setPlayerPath(playerIndex,p.getPathType());
         p.setName(pName);
-        cout<<pName<<" has chosen the character: "<<p.getName()<<"!\n";
+        cout << pName << " has chosen the character: " << p.getName() << "!\n";
         players[playerIndex]=p;
     }
 
-    RandomEvent events[100];int eventCount=0;
-    loadRandomEvents("random_events.txt",events,eventCount);
+    RandomEvent events[100];
+    LoadResult eventRes = loadRandomEvents(events);
+    if(!eventRes.success) {
+        cout << "[WARN] Random events not loaded correctly. Some tile events may not occur.\n";
+    }
 
-    Riddle riddles[50];int riddleCount=0;
-    loadRiddles("riddles.txt",riddles,riddleCount);
+    Riddle riddles[50];
+    LoadResult riddleRes = loadRiddles(riddles);
+    if(!riddleRes.success) {
+        cout << "[WARN] Riddles not loaded correctly. Challenge tiles may not function fully.\n";
+    }
 
     bool gameOver=false;
 
@@ -207,19 +261,19 @@ int main(){
             }
             if(gameOver) break;
 
-            cout<<"\n----------------------------------\n";
-            cout<<players[currentPlayerIndex].getName()<<"'s turn.\n";
+            cout << "\n----------------------------------\n";
+            cout << players[currentPlayerIndex].getName() << "'s turn.\n";
             gameBoard.displayBoard();
             bool endTurn=false;
             while(!endTurn && !gameOver){
-                cout<<"\n[MAIN MENU]\n"
-                    <<"1. Check Progress\n"
-                    <<"2. Review Character\n"
-                    <<"3. Check Position\n"
-                    <<"4. Review Advisor\n"
-                    <<"5. Move Forward\n"
-                    <<"Choose an option: ";
-                int menuChoice;cin>>menuChoice;
+                cout << "\n[MAIN MENU]\n"
+                     << "1. Check Progress\n"
+                     << "2. Review Character\n"
+                     << "3. Check Position\n"
+                     << "4. Review Advisor\n"
+                     << "5. Move Forward\n"
+                     << "Choose an option: ";
+                int menuChoice; cin>>menuChoice;
                 if(menuChoice==1){
                     players[currentPlayerIndex].displayStats();
                     cout<<"\n1. Convert Traits to Honor\n2. Back\nChoice: ";
@@ -237,12 +291,14 @@ int main(){
                 } else if(menuChoice==4){
                     cout<<"Current Advisor: ";
                     int adv=players[currentPlayerIndex].getAdvisor();
-                    if(adv==1)cout<<"Chapter Master";
-                    else if(adv==2)cout<<"Ethereal";
-                    else if(adv==3)cout<<"Ork Mek";
-                    else if(adv==4)cout<<"Eldar Farseer";
-                    else if(adv==5)cout<<"Necron Cryptek";
-                    else cout<<"None";
+                    switch(adv){
+                        case 1:cout<<"Chapter Master";break;
+                        case 2:cout<<"Ethereal";break;
+                        case 3:cout<<"Ork Mek";break;
+                        case 4:cout<<"Eldar Farseer";break;
+                        case 5:cout<<"Necron Cryptek";break;
+                        default:cout<<"None";break;
+                    }
                     cout<<"\nAdvisors can protect you from certain negative events.\n";
                 } else if(menuChoice==5){
                     cout<<"Press Enter to spin the movement.\n";
@@ -260,8 +316,9 @@ int main(){
                     Player updatedPlayer = players[currentPlayerIndex];
                     bool canChangeAdvisor=(players[currentPlayerIndex].getPathType()==1);
 
+                    // Handle tile events using data from 'events' and 'riddles'
                     if(tileType==REGULAR_TILE){
-                        updatedPlayer=Tile::handleRegularTile(updatedPlayer,events,eventCount);
+                        updatedPlayer=Tile::handleRegularTile(updatedPlayer, events, eventRes.count);
                     } else if(tileType==OASIS_TILE){
                         Tile::OasisResult res=Tile::handleOasisTile(updatedPlayer);
                         updatedPlayer=res.player;
@@ -276,7 +333,7 @@ int main(){
                         updatedPlayer=Tile::handleHyenasTile(updatedPlayer,lastMove);
                         gameBoard.movePlayer(currentPlayerIndex,-lastMove);
                     } else if(tileType==CHALLENGE_TILE){
-                        updatedPlayer=Tile::handleChallengeTile(updatedPlayer,riddles,riddleCount);
+                        updatedPlayer=Tile::handleChallengeTile(updatedPlayer,riddles,riddleRes.count);
                     } else if(tileType==SHOP_TILE){
                         updatedPlayer=Tile::handleShopTile(updatedPlayer);
                     } else if(tileType==FIGHT_TILE){
@@ -292,14 +349,14 @@ int main(){
 
                     players[currentPlayerIndex]=updatedPlayer;
                     if(!gameOver && tileType!=END_TILE){
-                        // Prepare arrays to determine same-tile battles
-                        int positions[MAX_PLAYERS]; 
-                        int paths[MAX_PLAYERS]; 
+                        int positions[MAX_PLAYERS];
+                        int paths[MAX_PLAYERS];
                         gameBoard.getAllPlayerPositions(numPlayers, positions);
                         gameBoard.getAllPlayerPaths(numPlayers, paths);
 
                         int pos=gameBoard.getPlayerPosition(currentPlayerIndex);
                         int path=gameBoard.getPlayerPath(currentPlayerIndex);
+
                         Player afterBattle=Tile::handleSameTileBattle(players,numPlayers,currentPlayerIndex,pos,path,positions,paths);
                         players[currentPlayerIndex]=afterBattle;
                     }
