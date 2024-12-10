@@ -16,7 +16,7 @@ private:
 
     void displayTile(int path_index, int pos);
     void initializeTiles(int path_index);
-    bool isPlayerOnTile(int pos, int path_index, int &playerOnTile);
+    bool isPlayerOnTile(int pos, int path_index);
 
 public:
     Board();

@@ -13,6 +13,9 @@ using namespace std;
 #define ORANGE "\033[48;2;230;115;0m" /* Orange (230,115,0) */
 #define GREY "\033[48;2;128;128;128m" /* Grey (128,128,128) */
 #define RESET "\033[0m"
+#define CYAN    "\033[48;2;0;255;255m"   /* Cyan (Shop) */
+#define MAGENTA "\033[48;2;255;0;255m"   /* Magenta (Fight) */
+#define YELLOW  "\033[48;2;255;255;0m"   /* Yellow (Casino) */
 
 void Board::initializeBoard() {
     srand(time(0)); // Seed random number generator
@@ -93,7 +96,7 @@ void Board::displayTile(int player_index, int pos) {
     char c = _tiles[player_index][pos].color;
 
     // Map colors
-    if      (c == 'R'){} color = RED;
+    if      (c == 'R') color = RED;
     else if (c == 'G') color = GREEN;
     else if (c == 'B') color = BLUE;
     else if (c == 'U') color = PURPLE;
