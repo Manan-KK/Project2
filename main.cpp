@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void loadCharacters(string filename, string names[], int ages[], int mights[], int ends[], int cunnings[], int &count) {
+void loadCharacters(string filename, string names[], int ages[], int mights[], int ends[], int cunnings[], int count) {
     ifstream file(filename.c_str());
     count = 0;
     if(!file.is_open()) return;
@@ -53,7 +53,7 @@ void loadCharacters(string filename, string names[], int ages[], int mights[], i
     file.close();
 }
 
-void loadRandomEvents(string filename, RandomEvent events[], int &count) {
+void loadRandomEvents(string filename, RandomEvent events[], int count) {
     ifstream file(filename.c_str());
     count=0;
     if(!file.is_open()) return;
@@ -96,7 +96,7 @@ void loadRandomEvents(string filename, RandomEvent events[], int &count) {
     file.close();
 }
 
-void loadRiddles(string filename, Riddle riddles[], int &count) {
+void loadRiddles(string filename, Riddle riddles[], int count) {
     ifstream file(filename.c_str());
     count=0;
     if(!file.is_open()) return;

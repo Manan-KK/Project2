@@ -1,0 +1,10 @@
+Desert storm engulfs your party|2|4|-500
+Fatigue from rigorous training|0|3|-200
+Challenging night watch|1|2|-400
+Extra resources found in ruins|1|0|800
+Witnessed a grand cosmic event|0|0|600
+Blessing by a wandering master|2|0|300
+Accidental pitfall|2|1|-300
+Aura of protection surrounds you|2|0|500
+Strange whispers at dusk|0|5|-250
+Abandoned weapon stash|1|0|700
