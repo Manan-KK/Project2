@@ -12,9 +12,8 @@ private:
     int endurance;
     int cunning;
     int honor;
-    int pathType; 
-    int advisor;  
-
+    int pathType;
+    int advisor;
     void validateStats();
 
 public:
