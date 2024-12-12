@@ -227,8 +227,8 @@ int main() {
                  cEnd[characterChoice], cCunn[characterChoice], 20000);
 
         cout << "\nChoose your path:\n"
-             << "1. Chapter Training Grounds (-5000 PridePoints, +500 Might, +500 Endurance, +1000 Cunning)\n"
-             << "2. Frontline Deployment (+5000 PridePoints, +200 all traits)\n"
+             << "1. Chapter Training Grounds (-5000 Honor, +500 Might, +500 Endurance, +1000 Cunning)\n"
+             << "2. Frontline Deployment (+5000 Honor, +200 all traits)\n"
              << "Your choice: ";
         int pathChoice; cin >> pathChoice;
         while(pathChoice!=1&&pathChoice!=2){
@@ -302,11 +302,11 @@ int main() {
                 int menuChoice; cin>>menuChoice;
                 if(menuChoice==1){
                     players[currentPlayerIndex].displayStats();
-                    cout<<"\n1. Convert Traits to PridePoints\n2. Back\nChoice: ";
+                    cout<<"\n1. Convert Traits to Honor\n2. Back\nChoice: ";
                     int subMenu;cin>>subMenu;
                     if(subMenu==1){
                         players[currentPlayerIndex].convertTraitsToHonor();
-                        cout<<"Traits converted to additional PridePoints.\n";
+                        cout<<"Traits converted to additional Honor.\n";
                     }
                 } else if(menuChoice==2){
                     cout<<"Character: "<<players[currentPlayerIndex].getName()
@@ -374,8 +374,6 @@ int main() {
                         updatedPlayer=Tile::handleChallengeTile(updatedPlayer,riddles,riddleRes.count);
                     } else if(tileType==SHOP_TILE){
                         updatedPlayer=Tile::handleShopTile(updatedPlayer);
-                    } else if(tileType==FIGHT_TILE){
-                        updatedPlayer=Tile::handleFightTile(players,numPlayers,currentPlayerIndex,updatedPlayer);
                     } else if(tileType==CASINO_TILE){
                         updatedPlayer=Tile::handleCasinoTile(updatedPlayer);
                     } else if(tileType==END_TILE){
@@ -432,7 +430,7 @@ int main() {
     cout<<"\n============== FINAL LEADERBOARD ==============\n";
     for(int i=0;i<numPlayers;i++){
         int playerPos=sortedPlayerOrder[i];
-        cout<<i+1<<". "<<players[playerPos].getName()<<" - PridePoints: "<<players[playerPos].getHonor()<<endl;
+        cout<<i+1<<". "<<players[playerPos].getName()<<" - Honor: "<<players[playerPos].getHonor()<<endl;
     }
     cout<<"Winner: "<<players[sortedPlayerOrder[0]].getName()<<"!\n";
 
@@ -441,7 +439,7 @@ int main() {
         out<<"Game Results:\n";
         for(int i=0;i<numPlayers;i++){
             int playerPos=sortedPlayerOrder[i];
-            out<<i+1<<". "<<players[playerPos].getName()<<" - PridePoints: "<<players[playerPos].getHonor()<<"\n";
+            out<<i+1<<". "<<players[playerPos].getName()<<" - Honor: "<<players[playerPos].getHonor()<<"\n";
         }
         out.close();
         cout<<"Game results saved to game_results.txt\n";

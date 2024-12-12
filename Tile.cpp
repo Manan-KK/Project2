@@ -20,7 +20,7 @@ static bool askRiddle(Player player, const Riddle riddles[], int rCount) {
 static int advisorMenuChoice() {
     cout<<"\n[ADVISOR SELECTION]\n"
         <<"1. Chapter Master\n"
-        <<"2. Ethereal\n"
+        <<"2. Ethereal Chair\n"
         <<"3. Ork Mek\n"
         <<"4. Eldar Farseer\n"
         <<"5. Necron Cryptek\n"
@@ -46,7 +46,6 @@ int Tile::getType() const {
     else if (color=='O') return END_TILE;
     else if (color=='Y') return START_TILE;
     else if (color=='S') return SHOP_TILE;
-    else if (color=='F') return FIGHT_TILE;
     else if (color=='C') return CASINO_TILE;
     return -1;
 }
@@ -84,7 +83,7 @@ Player Tile::handleRegularTile(Player player, const RandomEvent events[], int ev
 }
 
 Tile::OasisResult Tile::handleOasisTile(Player player) {
-    cout<<"[OASIS] +200 to Might, Endurance, Cunning. You get another turn.\n";
+    cout<<"[HESLING TEMPLE] +200 to Might, Endurance, Cunning. You get another turn.\n";
     player.incMight(200);
     player.incEndurance(200);
     player.incCunning(200);
@@ -95,7 +94,7 @@ Tile::OasisResult Tile::handleOasisTile(Player player) {
 }
 
 Player Tile::handleCounselingTile(Player player, bool canChangeAdvisor) {
-    cout<<"[COUNSELING] +300 to Might, Endurance, Cunning.\n";
+    cout<<"[SHRINE OF VALOR] +300 to Might, Endurance, Cunning.\n";
     player.incMight(300);
     player.incEndurance(300);
     player.incCunning(300);
@@ -113,7 +112,7 @@ Player Tile::handleCounselingTile(Player player, bool canChangeAdvisor) {
 }
 
 Player Tile::handleGraveyardTile(Player player) {
-    cout<<"[GRAVEYARD] Move back 10 spaces and -100 to all traits.\n";
+    cout<<"[TOMB OF THE LOST] Move back 10 spaces and -100 to all traits.\n";
     player.decMight(100);
     player.decEndurance(100);
     player.decCunning(100);
@@ -161,42 +160,7 @@ Player Tile::handleShopTile(Player player) {
     return player;
 }
 
-Player Tile::handleFightTile(Player players[], int playerCount, int currentPlayerIndex, Player currentPlayer) {
-    cout<<"[DUELING GROUNDS] Challenge another player?\n1. Yes\n2. No\nYour choice: ";
-    int fightChoice;cin>>fightChoice;
-    if(fightChoice==1){
-        cout<<"Choose a player to challenge:\n";
-        for(int p=0;p<playerCount;p++){
-            if(p!=currentPlayerIndex) cout<<p+1<<"."<<players[p].getName()<<endl;
-        }
-        int opponentChoice;cin>>opponentChoice;
-        opponentChoice--;
-        if(opponentChoice<0||opponentChoice>=playerCount||opponentChoice==currentPlayerIndex){
-            cout<<"Invalid opponent.\n";
-            return currentPlayer;
-        }
-        int currentPower=currentPlayer.getMight()+currentPlayer.getEndurance();
-        int oppPower=players[opponentChoice].getMight()+players[opponentChoice].getEndurance();
-        if(currentPower>oppPower){
-            cout<<"You win the duel! +1000 Honor to you.\n";
-            currentPlayer.incHonor(1000);
-            Player opponentPlayer=players[opponentChoice];
-            opponentPlayer.decHonor(1000);
-            players[opponentChoice]=opponentPlayer;
-        } else if(currentPower<oppPower){
-            cout<<"You lost the duel. -1000 Honor.\n";
-            currentPlayer.decHonor(1000);
-            Player opponentPlayer=players[opponentChoice];
-            opponentPlayer.incHonor(1000);
-            players[opponentChoice]=opponentPlayer;
-        } else {
-            cout<<"It's a tie.\n";
-        }
-    } else {
-        cout<<"You choose not to fight.\n";
-    }
-    return currentPlayer;
-}
+
 
 Player Tile::handleCasinoTile(Player player) {
     cout<<"[CASINO] Gamble between 0 and 1000 Honor:\nEnter amount: ";

@@ -1,4 +1,3 @@
 Game Results:
-1. c - PridePoints: 64550
-2. b - PridePoints: 60300
-3. a - PridePoints: 51800
+1. c - PridePoints: 53400
+2. b - PridePoints: 46200

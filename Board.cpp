@@ -12,7 +12,6 @@
 #define ORANGE "\033[48;2;230;115;0m"
 #define GREY   "\033[48;2;128;128;128m"
 #define CYAN   "\033[48;2;0;255;255m"
-#define MAGENTA "\033[48;2;255;0;255m"
 #define YELLOW  "\033[48;2;255;255;0m"
 #define RESET  "\033[0m"
 
@@ -80,7 +79,7 @@ void Board::initializeTiles(int player_index)
             green_count++;
         }
         else {
-            // Randomly choose from B,P,N,R,U,S,F,C
+            // Randomly choose from B,P,N,R,U,S,C
             int color_choice = rand() % 8;
             switch (color_choice) {
             case 0: temp.color = 'B'; break; // Blue (Oasis)
@@ -88,9 +87,8 @@ void Board::initializeTiles(int player_index)
             case 2: temp.color = 'N'; break; // Brown (Hyenas)
             case 3: temp.color = 'R'; break; // Red (Graveyard)
             case 4: temp.color = 'U'; break; // Purple (Challenge)
-            case 5: temp.color = 'S'; break; // Cyan (Shop)
-            case 6: temp.color = 'F'; break; // Magenta (Fight)
-            case 7: temp.color = 'C'; break; // Yellow (Casino)
+            case 5: temp.color = 'S'; break; // Cyan (Shop))
+            case 6: temp.color = 'C'; break; // Yellow (Casino)
             }
         }
 
@@ -156,7 +154,6 @@ void Board::displayTile(int path_index, int pos)
     else if (c == 'O') color = ORANGE;
     else if (c == 'Y') color = GREY;
     else if (c == 'S') color = CYAN;
-    else if (c == 'F') color = MAGENTA;
     else if (c == 'C') color = YELLOW;
 
     // Print the tile and reset immediately after

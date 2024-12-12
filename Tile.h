@@ -35,10 +35,7 @@ public:
     static Player handleHyenasTile(Player player, int lastMoveDistance);
     static Player handleChallengeTile(Player player, const Riddle riddles[], int riddleCount);
     static Player handleShopTile(Player player);
-    static Player handleFightTile(Player players[], int playerCount, int currentPlayerIndex, Player currentPlayer);
     static Player handleCasinoTile(Player player);
-
-    // Instead of passing Board, we pass arrays of player positions and paths directly
     static Player handleSameTileBattle(Player players[], int playerCount, int currentPlayerIndex, int currentPosition, int currentPath, const int playerPositions[], const int playerPaths[]);
 };
 
@@ -51,7 +48,6 @@ public:
 #define END_TILE 6
 #define START_TILE 7
 #define SHOP_TILE 8
-#define FIGHT_TILE 9
 #define CASINO_TILE 10
 
 #endif
