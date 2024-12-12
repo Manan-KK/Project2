@@ -62,18 +62,15 @@ void Board::initializeTiles(int player_index)
     int green_count = 0;
     int total_tiles = _BOARD_SIZE;
 
-    // First pass: Set tiles according to the provided snippet logic
-    for (int i = 0; i < total_tiles; i++)
+    for (int i = 0; i < 52; i++)
     {
         if (i == total_tiles - 1) {
-            // Last tile as Orange "O" (Pride Rock)
             temp.color = 'O';
         }
         else if (i == 0) {
-            // First tile as Grey "Y" (Start)
             temp.color = 'Y';
         }
-        else if (green_count < 30 && (rand() % (total_tiles - i) < 30 - green_count)) {
+        else if (green_count < 30 && (rand() % (total_tiles - i) < (30 - green_count))) {
             temp.color = 'G';
             green_count++;
         }
@@ -104,11 +101,6 @@ void Board::initializeTiles(int player_index)
         _tiles[player_index][i] = temp;
     }
 
-    // Second pass: Ensure at least 20 special tiles and incorporate S(Fight), F(Fight), C(Casino) as well.
-    // Special tiles are B,P,N,R,U,S,F,C
-    // Non-special: G (regular), Y (start), O (end)
-    // Add S, F, C to the board by possibly converting some G tiles if needed.
-    // First, count current special tiles:
     int specialCount = 0;
     for (int i = 0; i < total_tiles; i++) {
         char c = _tiles[player_index][i].color;
@@ -118,9 +110,6 @@ void Board::initializeTiles(int player_index)
         }
     }
 
-    // If fewer than 20 special tiles, convert some 'G' tiles into special ones.
-    // Path 0 (Cub Training): beneficial set = {B,P,S,C}
-    // Path 1 (Straight to Pride Lands): challenging set = {R,N,U,F}
 
     if (specialCount < 20) {
         for (int i = 1; i < total_tiles - 1 && specialCount < 20; i++) {
@@ -134,7 +123,6 @@ void Board::initializeTiles(int player_index)
                     else if (roll == 2) c='S'; 
                     else c='C'; 
                 } else {
-                    // Straight to Pride Lands: Pick from {R,N,U,F}
                     int roll = rand() % 4;
                     if (roll == 0) c='R';
                     else if (roll == 1) c='N';
@@ -146,8 +134,6 @@ void Board::initializeTiles(int player_index)
         }
     }
 
-    // If desired, you can further adjust distributions or ensure that S,F,C appear even if not chosen yet.
-    // The code above ensures at least 20 special tiles and differentiates the tile sets by path.
 }
 
 
@@ -186,7 +172,7 @@ void Board::displayTrack(int path_index) {
     for (int i = 0; i < _BOARD_SIZE; i++) {
         displayTile(path_index, i);
     }
-    cout << endl;
+     cout << RESET << "\n" ;
 }
 
 void Board::displayBoard() {
