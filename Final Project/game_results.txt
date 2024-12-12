@@ -1,0 +1,5 @@
+Game Results:
+1. c - Honor: 55300
+2. a - Honor: 50495
+3. b - Honor: 37010
+4. d - Honor: 33800
