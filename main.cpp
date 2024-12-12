@@ -163,7 +163,7 @@ int main() {
     const int MAX_PLAYERS=4;
     int numPlayers;
     cout << "====================================\n"
-         << " Welcome to the Warhammer 40K Trial!\n"
+         << "  Welcome to the Warhammer 40K Trial!\n"
          << "====================================\n"
          << "Enter number of players (1-4): ";
     cin >> numPlayers;
@@ -182,20 +182,16 @@ int main() {
 
     LoadResult charRes = loadCharacters(cNames, cAges, cMight, cEnd, cCunn);
     if(!charRes.success || charRes.count==0) {
-        // Default if no file
-        charRes.count=5;
-        cNames[0]="Apollo"; cAges[0]=5; cMight[0]=500; cEnd[0]=500; cCunn[0]=1000;
-        cNames[1]="Mane"; cAges[1]=8; cMight[1]=900; cEnd[1]=600; cCunn[1]=600;
-        cNames[2]="Elsa"; cAges[2]=12; cMight[2]=900; cEnd[2]=700; cCunn[2]=500;
-        cNames[3]="Zuri"; cAges[3]=7; cMight[3]=600; cEnd[3]=500; cCunn[3]=900;
-        cNames[4]="Roary"; cAges[4]=18; cMight[4]=1000; cEnd[4]=500; cCunn[4]=500;
+        cout << "[ERROR] No characters loaded from characters.txt. Cannot start the game.\n";
+        return 1; // Exit if no characters available
     }
 
     // Track chosen characters
     bool chosenChars[20];
     for(int i=0;i<charRes.count;i++) chosenChars[i]=false;
 
-    // Track advisor availability: 0=none, 1=Rafiki,2=Nala,3=Sarabi,4=Zazu,5=Sarafina
+    // Track advisor availability:
+    // 1=Chapter Master,2=Ethereal,3=Ork Mek,4=Eldar Farseer,5=Necron Cryptek,0=None
     bool advisorTaken[6];
     for (int i=0; i<=5; i++) advisorTaken[i]=false;
 
@@ -231,8 +227,8 @@ int main() {
                  cEnd[characterChoice], cCunn[characterChoice], 20000);
 
         cout << "\nChoose your path:\n"
-             << "1. Cub Training (-5000 PridePoints, +500 Stamina, +500 Strength, +1000 Wisdom)\n"
-             << "2. Straight to the Pride Lands (+5000 PridePoints, +200 all stats)\n"
+             << "1. Chapter Training Grounds (-5000 PridePoints, +500 Might, +500 Endurance, +1000 Cunning)\n"
+             << "2. Frontline Deployment (+5000 PridePoints, +200 all traits)\n"
              << "Your choice: ";
         int pathChoice; cin >> pathChoice;
         while(pathChoice!=1&&pathChoice!=2){
@@ -246,7 +242,7 @@ int main() {
             p.incCunning(1000);
             p.setPathType(0);
             cout << "Initial advisor selection:\n"
-                 << "1. Rafiki\n2. Nala\n3. Sarabi\n4. Zazu\n5. Sarafina\n0. None\nChoice: ";
+                 << "1. Chapter Master\n2. Ethereal\n3. Ork Mek\n4. Eldar Farseer\n5. Necron Cryptek\n0. None\nChoice: ";
             int advChoice; cin >> advChoice;
             while(advChoice<0||advChoice>5||(advChoice!=0 && advisorTaken[advChoice])){
                 cout << "Invalid or Advisor taken. Choose again: ";
@@ -322,23 +318,18 @@ int main() {
                     cout<<"Current Advisor: ";
                     int adv=players[currentPlayerIndex].getAdvisor();
                     switch(adv){
-                        case 1:cout<<"Rafiki";break;
-                        case 2:cout<<"Nala";break;
-                        case 3:cout<<"Sarabi";break;
-                        case 4:cout<<"Zazu";break;
-                        case 5:cout<<"Sarafina";break;
+                        case 1:cout<<"Chapter Master";break;
+                        case 2:cout<<"Ethereal";break;
+                        case 3:cout<<"Ork Mek";break;
+                        case 4:cout<<"Eldar Farseer";break;
+                        case 5:cout<<"Necron Cryptek";break;
                         default:cout<<"None";break;
                     }
                     cout<<"\n";
 
-                    // Optional: If the player is allowed to switch advisors here (like on a counseling tile),
-                    // you would implement similar logic as initial selection:
-                    // Ask if they want to switch:
-                    // if yes:
-                    //   int oldAdv = players[currentPlayerIndex].getAdvisor();
-                    //   if(oldAdv!=0) advisorTaken[oldAdv]=false; // free old advisor
-                    //   prompt for new advisor with check `(advChoice!=0 && advisorTaken[advChoice])`
-                    //   set new advisor and `advisorTaken[newAdv]=true`.
+                    // Switching advisors (if desired) would occur on a special tile, not here
+                    // unless you add the logic similar to initial selection,
+                    // checking advisorTaken[] and releasing/taking advisors as needed.
                 } else if(menuChoice==5){
                     cout<<"Press Enter to spin...\n";
                     cin.ignore();
@@ -363,17 +354,11 @@ int main() {
                         updatedPlayer=res.player;
                         endTurn=res.endTurn; 
                     } else if(tileType==COUNSELING_TILE){
-                        // Player on counseling tile can gain stats and possibly switch advisor
                         updatedPlayer=Tile::handleCounselingTile(updatedPlayer,canChangeAdvisor);
-                        // If switching advisors is allowed here, do it similarly:
-                        // Example switching advisor logic:
+                        // If advisor switching allowed here, apply logic:
                         // int oldAdv = updatedPlayer.getAdvisor();
-                        // cout << "Choose new advisor:\n1.Rafiki\n2.Nala\n3.Sarabi\n4.Zazu\n5.Sarafina\n0.None\n";
-                        // int newAdv; cin >> newAdv;
-                        // while(newAdv<0||newAdv>5||(newAdv!=0 && advisorTaken[newAdv])) {
-                        //   cout<<"Invalid or Taken. Choose again: ";
-                        //   cin >> newAdv;
-                        // }
+                        // cout << "Switch Advisor? Same logic as initial pick, check advisorTaken[].\n";
+                        // int newAdv; // pick new advisor
                         // if(oldAdv!=0 && oldAdv!=newAdv) advisorTaken[oldAdv]=false;
                         // if(newAdv!=0) advisorTaken[newAdv]=true;
                         // updatedPlayer.setAdvisor(newAdv);
@@ -394,7 +379,7 @@ int main() {
                     } else if(tileType==CASINO_TILE){
                         updatedPlayer=Tile::handleCasinoTile(updatedPlayer);
                     } else if(tileType==END_TILE){
-                        cout<<"You reached Pride Rock!\n";
+                        cout<<"You reached the final tile! The trial ends.\n";
                         gameOver=true;
                     } else if(tileType==START_TILE){
                         cout<<"At the Start Tile.\n";
