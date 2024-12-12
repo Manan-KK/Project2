@@ -1,21 +1,22 @@
 #include "Board.h"
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
-using namespace std;
+#include <cstdlib> // For rand()
+#include <ctime>   // For time()
 
-#define RED "\033[48;2;230;10;10m"
-#define GREEN "\033[48;2;34;139;34m"
-#define BLUE "\033[48;2;10;10;230m"
-#define PINK "\033[48;2;255;105;180m"
-#define BROWN "\033[48;2;139;69;19m"
+#define RED    "\033[48;2;230;10;10m"
+#define GREEN  "\033[48;2;34;139;34m"
+#define BLUE   "\033[48;2;10;10;230m"
+#define PINK   "\033[48;2;255;105;180m"
+#define BROWN  "\033[48;2;139;69;19m"
 #define PURPLE "\033[48;2;128;0;128m"
 #define ORANGE "\033[48;2;230;115;0m"
-#define GREY "\033[48;2;128;128;128m"
-#define RESET "\033[0m"
-#define CYAN    "\033[48;2;0;255;255m"
+#define GREY   "\033[48;2;128;128;128m"
+#define CYAN   "\033[48;2;0;255;255m"
 #define MAGENTA "\033[48;2;255;0;255m"
 #define YELLOW  "\033[48;2;255;255;0m"
+#define RESET  "\033[0m"
+
+using namespace std;
 
 Board::Board() {
     _player_count = 1;
@@ -36,70 +37,126 @@ Board::Board(int player_count) {
 
     for (int i = 0; i < _player_count; i++) {
         _player_position[i] = 0;
-        _player_path[i]=0;
-        _last_move[i]=0;
+        _player_path[i] = 0;
+        _last_move[i] = 0;
     }
-    for(int i=_player_count;i<_MAX_PLAYERS;i++){
-        _player_position[i]=0;_player_path[i]=0;_last_move[i]=0;
+    for (int i = _player_count; i < _MAX_PLAYERS; i++) {
+        _player_position[i] = 0;
+        _player_path[i] = 0;
+        _last_move[i] = 0;
     }
 
     initializeBoard();
 }
 
 void Board::initializeBoard() {
-    srand((unsigned)time(0));
+    // Initialize each path (0 and 1) with different tile distributions
     for (int i = 0; i < 2; i++) {
         initializeTiles(i);
     }
 }
 
-void Board::initializeTiles(int path_index) {
-    // Start tile at index 0: Y, End tile at index 51: O
-    // Distinct distributions for path 0 and path 1
+void Board::initializeTiles(int player_index)
+{
+    Tile temp;
+    int green_count = 0;
     int total_tiles = _BOARD_SIZE;
-    _tiles[path_index][0].color = 'Y';
-    _tiles[path_index][total_tiles-1].color = 'O';
 
-    int specialCount = 0;
-    for (int i = 1; i < total_tiles-1; i++) {
-        char chosenColor = 'G'; 
-        if (path_index == 0) {
-            // Cub Training: more beneficial tiles
-            int roll = rand()%100;
-            if(roll < 15) { chosenColor='B'; specialCount++; }  
-            else if(roll < 30) { chosenColor='P'; specialCount++; }
-            else if(roll < 35) { chosenColor='U'; specialCount++; } 
-            else if(roll < 40) { chosenColor='N'; specialCount++; } 
-            else if(roll < 45) { chosenColor='R'; specialCount++; } 
-            else { chosenColor='G'; }
-        } else {
-            // Straight to Pride Lands: more challenging tiles
-            int roll = rand()%100;
-            if(roll < 15) { chosenColor='R'; specialCount++; }
-            else if(roll < 30) { chosenColor='N'; specialCount++; }
-            else if(roll < 45) { chosenColor='U'; specialCount++; }
-            else if(roll < 55) { chosenColor='B'; specialCount++; }
-            else if(roll < 65) { chosenColor='P'; specialCount++; }
-            else { chosenColor='G'; }
+    // First pass: Set tiles according to the provided snippet logic
+    for (int i = 0; i < total_tiles; i++)
+    {
+        if (i == total_tiles - 1) {
+            // Last tile as Orange "O" (Pride Rock)
+            temp.color = 'O';
         }
-        _tiles[path_index][i].color = chosenColor;
+        else if (i == 0) {
+            // First tile as Grey "Y" (Start)
+            temp.color = 'Y';
+        }
+        else if (green_count < 30 && (rand() % (total_tiles - i) < 30 - green_count)) {
+            temp.color = 'G';
+            green_count++;
+        }
+        else {
+            // Randomly assign one of the other colors: B, P, N, R, U
+            // This is the initial random assignment, we'll adjust in second pass
+            int color_choice = rand() % 5;
+            switch (color_choice)
+            {
+            case 0:
+                temp.color = 'B'; // Blue (Oasis)
+                break;
+            case 1:
+                temp.color = 'P'; // Pink (Counseling)
+                break;
+            case 2:
+                temp.color = 'N'; // Brown (Hyenas)
+                break;
+            case 3:
+                temp.color = 'R'; // Red (Graveyard)
+                break;
+            case 4:
+                temp.color = 'U'; // Purple (Challenge)
+                break;
+            }
+        }
+
+        _tiles[player_index][i] = temp;
     }
 
-    // Ensure at least 20 special tiles
-    if(specialCount < 20) {
-        for(int i=1; i<total_tiles-1 && specialCount<20; i++){
-            if(_tiles[path_index][i].color=='G') {
-                _tiles[path_index][i].color = (path_index==0?'B':'R');
+    // Second pass: Ensure at least 20 special tiles and incorporate S(Fight), F(Fight), C(Casino) as well.
+    // Special tiles are B,P,N,R,U,S,F,C
+    // Non-special: G (regular), Y (start), O (end)
+    // Add S, F, C to the board by possibly converting some G tiles if needed.
+    // First, count current special tiles:
+    int specialCount = 0;
+    for (int i = 0; i < total_tiles; i++) {
+        char c = _tiles[player_index][i].color;
+        // Consider special as any tile that is one of B,P,N,R,U,S,F,C
+        if (c=='B' || c=='P' || c=='N' || c=='R' || c=='U' || c=='S' || c=='F' || c=='C') {
+            specialCount++;
+        }
+    }
+
+    // If fewer than 20 special tiles, convert some 'G' tiles into special ones.
+    // Path 0 (Cub Training): beneficial set = {B,P,S,C}
+    // Path 1 (Straight to Pride Lands): challenging set = {R,N,U,F}
+
+    if (specialCount < 20) {
+        for (int i = 1; i < total_tiles - 1 && specialCount < 20; i++) {
+            char &c = _tiles[player_index][i].color;
+            if (c == 'G') {
+                if (player_index == 0) {
+                    // Cub Training: Pick from {B,P,S,C}
+                    int roll = rand() % 4;
+                    if (roll == 0) c='B';
+                    else if (roll == 1) c='P';
+                    else if (roll == 2) c='S'; 
+                    else c='C'; 
+                } else {
+                    // Straight to Pride Lands: Pick from {R,N,U,F}
+                    int roll = rand() % 4;
+                    if (roll == 0) c='R';
+                    else if (roll == 1) c='N';
+                    else if (roll == 2) c='U';
+                    else c='F';
+                }
                 specialCount++;
             }
         }
     }
+
+    // If desired, you can further adjust distributions or ensure that S,F,C appear even if not chosen yet.
+    // The code above ensures at least 20 special tiles and differentiates the tile sets by path.
 }
 
+
 void Board::displayTile(int path_index, int pos) {
+    // Gather all players on this tile
     string playerIcons = "";
-    for(int i=0;i<_player_count;i++){
-        if(_player_path[i] == path_index && _player_position[i] == pos) {
+    for (int i = 0; i < _player_count; i++) {
+        if (_player_path[i] == path_index && _player_position[i] == pos) {
+            // Player i is here
             playerIcons += to_string(i+1);
         }
     }
@@ -118,7 +175,7 @@ void Board::displayTile(int path_index, int pos) {
     else if (c == 'F') color = MAGENTA;
     else if (c == 'C') color = YELLOW;
 
-    if(playerIcons == "") {
+    if (playerIcons == "") {
         cout << color << "| |" << RESET;
     } else {
         cout << color << "|" << playerIcons << "|" << RESET;
@@ -134,7 +191,7 @@ void Board::displayTrack(int path_index) {
 
 void Board::displayBoard() {
     displayTrack(0);
-    cout << endl;
+    cout << endl; // extra line between lanes
     displayTrack(1);
 }
 
@@ -187,13 +244,13 @@ int Board::getLastMove(int player_index) const {
 }
 
 void Board::getAllPlayerPositions(int playerCount, int positions[]) const {
-    for(int i=0;i<playerCount;i++){
-        positions[i]=getPlayerPosition(i);
+    for(int i=0; i<playerCount; i++){
+        positions[i] = getPlayerPosition(i);
     }
 }
 
 void Board::getAllPlayerPaths(int playerCount, int paths[]) const {
-    for(int i=0;i<playerCount;i++){
-        paths[i]=getPlayerPath(i);
+    for(int i=0; i<playerCount; i++){
+        paths[i] = getPlayerPath(i);
     }
 }
