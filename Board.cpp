@@ -108,7 +108,7 @@ void Board::initializeTiles(int player_index)
     // If fewer than 20 special tiles, convert some G tiles to special ones depending on path
     if (specialCount < 20) {
         for (int i = 1; i < total_tiles - 1 && specialCount < 20; i++) {
-            char &c = _tiles[player_index][i].color;
+            char c = _tiles[player_index][i].color;
             if (c == 'G') {
                 if (player_index == 0) {
                     // Cub Training path: beneficial set (B,P,S,C)
