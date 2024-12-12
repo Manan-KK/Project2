@@ -13,8 +13,7 @@ struct LoadResult {
     int count;
     bool success;
 };
-
-
+ 
 
 // No filenames as parameters, no references
 LoadResult loadCharacters(string names[], int ages[], int mights[], int ends[], int cunnings[]) {
