@@ -61,16 +61,13 @@ void Board::initializeTiles(int player_index)
     int green_count = 0;
     int total_tiles = _BOARD_SIZE;
 
-    // First pass: Place start(Y), end(O), exactly 30 green(G) tiles,
-    // and the rest randomly from B,P,N,R,U,S,F,C
+
     for (int i = 0; i < total_tiles; i++)
     {
         if (i == total_tiles - 1) {
-            // Last tile: Orange (O) for "Pride Rock"
             temp.color = 'O';
         }
         else if (i == 0) {
-            // First tile: Grey (Y) start tile
             temp.color = 'Y';
         }
         else if (green_count < 30 && (rand() % (total_tiles - i) < 30 - green_count)) {
@@ -96,7 +93,6 @@ void Board::initializeTiles(int player_index)
     }
 
     // Second pass: Distribution function to ensure at least 20 special tiles.
-    // Special tiles: B,P,N,R,U,S,F,C
     int specialCount = 0;
     for (int i = 0; i < total_tiles; i++) {
         char c = _tiles[player_index][i].color;
@@ -112,18 +108,26 @@ void Board::initializeTiles(int player_index)
             if (c == 'G') {
                 if (player_index == 0) {
                     // Cub Training path: beneficial set (B,P,S,C)
-                    int roll = rand() % 4;
-                    if (roll == 0) c='B';
-                    else if (roll == 1) c='P';
-                    else if (roll == 2) c='S';
+                    int roll = rand() % 100;
+                    if (roll < 15) c='B';
+                    else if (roll < 30) c='P';
+                    else if (roll < 45) c='S';
+                    else if (roll < 55) c='R';
+                    else if (roll < 65) c='N';
+                    else if (roll < 75) c='U';
+                    else if (roll < 85) c='F';
                     else c='C';
                 } else {
                     // Straight to Pride Lands: challenging set (R,N,U,F)
-                    int roll = rand() % 4;
-                    if (roll == 0) c='R';
-                    else if (roll == 1) c='N';
-                    else if (roll == 2) c='U';
-                    else c='F';
+                    int roll = rand() % 100;
+                    if (roll < 15) c='N';
+                    else if (roll < 30) c='U';
+                    else if (roll < 45) c='R';
+                    else if (roll < 55) c='B';
+                    else if (roll < 65) c='P';
+                    else if (roll < 75) c='S';
+                    else if (roll < 85) c='C';
+                    else c='R';
                 }
                 specialCount++;
             }
