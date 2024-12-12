@@ -62,67 +62,65 @@ void Board::initializeTiles(int player_index)
     int green_count = 0;
     int total_tiles = _BOARD_SIZE;
 
-    for (int i = 0; i < 52; i++)
+    // First pass: Place start(Y), end(O), exactly 30 green(G) tiles,
+    // and the rest randomly from B,P,N,R,U,S,F,C
+    for (int i = 0; i < total_tiles; i++)
     {
         if (i == total_tiles - 1) {
+            // Last tile: Orange (O) for "Pride Rock"
             temp.color = 'O';
         }
         else if (i == 0) {
+            // First tile: Grey (Y) start tile
             temp.color = 'Y';
         }
-        else if (green_count < 30 && (rand() % (total_tiles - i) < (30 - green_count))) {
+        else if (green_count < 30 && (rand() % (total_tiles - i) < 30 - green_count)) {
+            // Place green (G) tile
             temp.color = 'G';
             green_count++;
         }
         else {
-            // Randomly assign one of the other colors: B, P, N, R, U
-            // This is the initial random assignment, we'll adjust in second pass
-            int color_choice = rand() % 5;
-            switch (color_choice)
-            {
-            case 0:
-                temp.color = 'B'; // Blue (Oasis)
-                break;
-            case 1:
-                temp.color = 'P'; // Pink (Counseling)
-                break;
-            case 2:
-                temp.color = 'N'; // Brown (Hyenas)
-                break;
-            case 3:
-                temp.color = 'R'; // Red (Graveyard)
-                break;
-            case 4:
-                temp.color = 'U'; // Purple (Challenge)
-                break;
+            // Randomly choose from B,P,N,R,U,S,F,C
+            int color_choice = rand() % 8;
+            switch (color_choice) {
+            case 0: temp.color = 'B'; break; // Blue (Oasis)
+            case 1: temp.color = 'P'; break; // Pink (Counseling)
+            case 2: temp.color = 'N'; break; // Brown (Hyenas)
+            case 3: temp.color = 'R'; break; // Red (Graveyard)
+            case 4: temp.color = 'U'; break; // Purple (Challenge)
+            case 5: temp.color = 'S'; break; // Cyan (Shop)
+            case 6: temp.color = 'F'; break; // Magenta (Fight)
+            case 7: temp.color = 'C'; break; // Yellow (Casino)
             }
         }
 
         _tiles[player_index][i] = temp;
     }
 
+    // Second pass: Distribution function to ensure at least 20 special tiles.
+    // Special tiles: B,P,N,R,U,S,F,C
     int specialCount = 0;
     for (int i = 0; i < total_tiles; i++) {
         char c = _tiles[player_index][i].color;
-        // Consider special as any tile that is one of B,P,N,R,U,S,F,C
         if (c=='B' || c=='P' || c=='N' || c=='R' || c=='U' || c=='S' || c=='F' || c=='C') {
             specialCount++;
         }
     }
 
-
+    // If fewer than 20 special tiles, convert some G tiles to special ones depending on path
     if (specialCount < 20) {
         for (int i = 1; i < total_tiles - 1 && specialCount < 20; i++) {
             char &c = _tiles[player_index][i].color;
             if (c == 'G') {
                 if (player_index == 0) {
-                    // Cub Training: Pick from {B,P,S,C}
+                    // Cub Training path: beneficial set (B,P,S,C)
                     int roll = rand() % 4;
                     if (roll == 0) c='B';
                     else if (roll == 1) c='P';
-                    else if (roll == 2) c='S'; 
-                    else c='C'; 
+                    else if (roll == 2) c='S';
+                    else c='C';
                 } else {
+                    // Straight to Pride Lands: challenging set (R,N,U,F)
                     int roll = rand() % 4;
                     if (roll == 0) c='R';
                     else if (roll == 1) c='N';
@@ -133,20 +131,20 @@ void Board::initializeTiles(int player_index)
             }
         }
     }
-
 }
 
 
-void Board::displayTile(int path_index, int pos) {
-    // Gather all players on this tile
+void Board::displayTile(int path_index, int pos)
+{
+    // Gather player icons
     string playerIcons = "";
     for (int i = 0; i < _player_count; i++) {
         if (_player_path[i] == path_index && _player_position[i] == pos) {
-            // Player i is here
             playerIcons += to_string(i+1);
         }
     }
 
+    // Determine tile color background
     char c = _tiles[path_index][pos].color;
     string color = "";
     if      (c == 'R') color = RED;
@@ -161,6 +159,7 @@ void Board::displayTile(int path_index, int pos) {
     else if (c == 'F') color = MAGENTA;
     else if (c == 'C') color = YELLOW;
 
+    // Print the tile and reset immediately after
     if (playerIcons == "") {
         cout << color << "| |" << RESET;
     } else {
@@ -168,12 +167,19 @@ void Board::displayTile(int path_index, int pos) {
     }
 }
 
-void Board::displayTrack(int path_index) {
+
+void Board::displayTrack(int path_index)
+{
     for (int i = 0; i < _BOARD_SIZE; i++) {
         displayTile(path_index, i);
+        if (_tiles[path_index][i].color == 'O') {
+            // We've hit the win tile, end this track here
+            break;
+        }
     }
-     cout << RESET << "\n" ;
+    cout << RESET << "\n"; // Ensure line reset after finishing track
 }
+
 
 void Board::displayBoard() {
     displayTrack(0);
