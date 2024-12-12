@@ -448,6 +448,9 @@ int main() {
     }
 
     cout<<"Thank you for playing!\n";
-
+    cout << "Press Enter to Close this app\n";
+    cin.ignore();
+    cin.get();
     return 0;
+
 }

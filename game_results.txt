@@ -1,3 +1,4 @@
 Game Results:
-1. b - PridePoints: 59905
-2. a - PridePoints: 50995
+1. a - Honor: 63604
+2. b - Honor: 56050
+3. c - Honor: 36915
