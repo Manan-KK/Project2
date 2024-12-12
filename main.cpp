@@ -162,13 +162,12 @@ int main() {
     srand((unsigned)time(0));
     const int MAX_PLAYERS=4;
     int numPlayers;
-
-    cout << "=========================================\n"
-         << "Welcome to the Warhammer 40K Honor Trial!\n"
-         << "=========================================\n"
+    cout << "====================================\n"
+         << " Welcome to the Warhammer 40K Trial!\n"
+         << "====================================\n"
          << "Enter number of players (1-4): ";
     cin >> numPlayers;
-    while(numPlayers<1||numPlayers>MAX_PLAYERS){
+    while(numPlayers<1||numPlayers>4){
         cout << "Invalid number. Enter 1-4: ";
         cin >> numPlayers;
     }
@@ -176,36 +175,64 @@ int main() {
     Board gameBoard(numPlayers);
     Player players[MAX_PLAYERS];
 
+    // Load characters
     string cNames[20]; 
     int cAges[20], cMight[20], cEnd[20], cCunn[20];
     for(int i=0;i<20;i++) cNames[i]="";
 
     LoadResult charRes = loadCharacters(cNames, cAges, cMight, cEnd, cCunn);
-    if(!charRes.success) {
-        cout << "[WARN] Characters not loaded correctly. The game might have limited character options.\n";
+    if(!charRes.success || charRes.count==0) {
+        // Default if no file
+        charRes.count=5;
+        cNames[0]="Apollo"; cAges[0]=5; cMight[0]=500; cEnd[0]=500; cCunn[0]=1000;
+        cNames[1]="Mane"; cAges[1]=8; cMight[1]=900; cEnd[1]=600; cCunn[1]=600;
+        cNames[2]="Elsa"; cAges[2]=12; cMight[2]=900; cEnd[2]=700; cCunn[2]=500;
+        cNames[3]="Zuri"; cAges[3]=7; cMight[3]=600; cEnd[3]=500; cCunn[3]=900;
+        cNames[4]="Roary"; cAges[4]=18; cMight[4]=1000; cEnd[4]=500; cCunn[4]=500;
     }
 
+    // Track chosen characters
+    bool chosenChars[20];
+    for(int i=0;i<charRes.count;i++) chosenChars[i]=false;
+
+    // Track advisor availability: 0=none, 1=Rafiki,2=Nala,3=Sarabi,4=Zazu,5=Sarafina
+    bool advisorTaken[6];
+    for (int i=0; i<=5; i++) advisorTaken[i]=false;
+
+    // Character Selection & Path for each player
     for(int playerIndex=0; playerIndex<numPlayers; playerIndex++){
-        cout << "\nPlayer " << playerIndex+1 << ", enter your name: ";
+        cout << "\nPlayer " << playerIndex+1 << ", enter your player name: ";
         string pName; cin >> pName;
 
-        cout << "\nAvailable characters:\n";
+        cout << "\nAvailable Characters:\n";
+        cout << "--------------------------------------------------------\n";
+        cout << " # | Name      | Age | Might | Endurance | Cunning\n";
+        cout << "--------------------------------------------------------\n";
         for(int c=0;c<charRes.count;c++){
-            cout << c+1 << "." << cNames[c] << endl;
+            if(!chosenChars[c]) {
+                cout << (c+1) << " | " << cNames[c]
+                     << " | " << cAges[c]
+                     << " | " << cMight[c]
+                     << " | " << cEnd[c]
+                     << " | " << cCunn[c] << "\n";
+            }
         }
+        cout << "--------------------------------------------------------\n";
         cout << "Choose a character by number: ";
         int characterChoice; cin >> characterChoice;
         characterChoice--;
-        while(characterChoice<0||characterChoice>=charRes.count){
+        while(characterChoice<0||characterChoice>=charRes.count||chosenChars[characterChoice]){
             cout << "Invalid. Choose again: ";
             cin >> characterChoice; characterChoice--;
         }
+        chosenChars[characterChoice]=true;
 
-        Player p(cNames[characterChoice], cAges[characterChoice], cMight[characterChoice], cEnd[characterChoice], cCunn[characterChoice], 20000);
+        Player p(cNames[characterChoice], cAges[characterChoice], cMight[characterChoice],
+                 cEnd[characterChoice], cCunn[characterChoice], 20000);
 
         cout << "\nChoose your path:\n"
-             << "1. Chapter Training Grounds(-5000 Honor,+500M/+500E/+1000C)\n"
-             << "2. Frontline(+5000 Honor,+200 all)\n"
+             << "1. Cub Training (-5000 PridePoints, +500 Stamina, +500 Strength, +1000 Wisdom)\n"
+             << "2. Straight to the Pride Lands (+5000 PridePoints, +200 all stats)\n"
              << "Your choice: ";
         int pathChoice; cin >> pathChoice;
         while(pathChoice!=1&&pathChoice!=2){
@@ -219,10 +246,14 @@ int main() {
             p.incCunning(1000);
             p.setPathType(0);
             cout << "Initial advisor selection:\n"
-                 << "1. Chapter Master\n2. Ethereal\n3. Ork Mek\n4. Eldar Farseer\n5. Necron Cryptek\n0. None\nChoice: ";
+                 << "1. Rafiki\n2. Nala\n3. Sarabi\n4. Zazu\n5. Sarafina\n0. None\nChoice: ";
             int advChoice; cin >> advChoice;
-            if(advChoice<0||advChoice>5) advChoice=0;
-            if(advChoice!=0)p.setAdvisor(advChoice);
+            while(advChoice<0||advChoice>5||(advChoice!=0 && advisorTaken[advChoice])){
+                cout << "Invalid or Advisor taken. Choose again: ";
+                cin >> advChoice;
+            }
+            if(advChoice!=0) advisorTaken[advChoice]=true;
+            p.setAdvisor(advChoice);
         } else {
             p.incHonor(5000);
             p.incMight(200);
@@ -230,28 +261,25 @@ int main() {
             p.incCunning(200);
             p.setPathType(1);
         }
+
         gameBoard.setPlayerPath(playerIndex,p.getPathType());
         p.setName(pName);
-        cout << pName << " has chosen the character: " << p.getName() << "!\n";
+        cout << pName << " has chosen: " << p.getName() << "!\n";
         players[playerIndex]=p;
     }
 
     RandomEvent events[100];
     LoadResult eventRes = loadRandomEvents(events);
-    if(!eventRes.success) {
-        cout << "[WARN] Random events not loaded correctly. Some tile events may not occur.\n";
-    }
 
     Riddle riddles[50];
     LoadResult riddleRes = loadRiddles(riddles);
-    if(!riddleRes.success) {
-        cout << "[WARN] Riddles not loaded correctly. Challenge tiles may not function fully.\n";
-    }
 
     bool gameOver=false;
 
+    // Main Game Loop
     while(!gameOver){
         for(int currentPlayerIndex=0; currentPlayerIndex<numPlayers; currentPlayerIndex++){
+            // Check if end reached
             for(int p=0;p<numPlayers;p++){
                 if(gameBoard.getPlayerPosition(p)>=51){
                     gameOver=true;
@@ -262,11 +290,14 @@ int main() {
 
             cout << "\n----------------------------------\n";
             cout << players[currentPlayerIndex].getName() << "'s turn.\n";
-            gameBoard.displayBoard();
+            if(!gameOver) {
+                gameBoard.displayBoard();
+            }
+
             bool endTurn=false;
             while(!endTurn && !gameOver){
                 cout << "\n[MAIN MENU]\n"
-                     << "1. Check Progress\n"
+                     << "1. Check Player Progress\n"
                      << "2. Review Character\n"
                      << "3. Check Position\n"
                      << "4. Review Advisor\n"
@@ -275,39 +306,48 @@ int main() {
                 int menuChoice; cin>>menuChoice;
                 if(menuChoice==1){
                     players[currentPlayerIndex].displayStats();
-                    cout<<"\n1. Convert Traits to Honor\n2. Back\nChoice: ";
+                    cout<<"\n1. Convert Traits to PridePoints\n2. Back\nChoice: ";
                     int subMenu;cin>>subMenu;
                     if(subMenu==1){
                         players[currentPlayerIndex].convertTraitsToHonor();
-                        cout<<"Traits converted to additional Honor.\n";
+                        cout<<"Traits converted to additional PridePoints.\n";
                     }
                 } else if(menuChoice==2){
                     cout<<"Character: "<<players[currentPlayerIndex].getName()
                         <<", Age:"<<players[currentPlayerIndex].getAge()<<endl;
                 } else if(menuChoice==3){
                     cout<<"Current Tile Position: "<<gameBoard.getPlayerPosition(currentPlayerIndex)<<endl;
-                    gameBoard.displayBoard();
+                    if(!gameOver) gameBoard.displayBoard();
                 } else if(menuChoice==4){
                     cout<<"Current Advisor: ";
                     int adv=players[currentPlayerIndex].getAdvisor();
                     switch(adv){
-                        case 1:cout<<"Chapter Master";break;
-                        case 2:cout<<"Ethereal";break;
-                        case 3:cout<<"Ork Mek";break;
-                        case 4:cout<<"Eldar Farseer";break;
-                        case 5:cout<<"Necron Cryptek";break;
+                        case 1:cout<<"Rafiki";break;
+                        case 2:cout<<"Nala";break;
+                        case 3:cout<<"Sarabi";break;
+                        case 4:cout<<"Zazu";break;
+                        case 5:cout<<"Sarafina";break;
                         default:cout<<"None";break;
                     }
-                    cout<<"\nAdvisors can protect you from certain negative events.\n";
+                    cout<<"\n";
+
+                    // Optional: If the player is allowed to switch advisors here (like on a counseling tile),
+                    // you would implement similar logic as initial selection:
+                    // Ask if they want to switch:
+                    // if yes:
+                    //   int oldAdv = players[currentPlayerIndex].getAdvisor();
+                    //   if(oldAdv!=0) advisorTaken[oldAdv]=false; // free old advisor
+                    //   prompt for new advisor with check `(advChoice!=0 && advisorTaken[advChoice])`
+                    //   set new advisor and `advisorTaken[newAdv]=true`.
                 } else if(menuChoice==5){
-                    cout<<"Press Enter to spin the movement.\n";
+                    cout<<"Press Enter to spin...\n";
                     cin.ignore();
                     cin.get();
                     int moveDistance=rand()%6+1;
                     cout<<"You move "<<moveDistance<<" steps.\n";
                     bool reachedEnd=gameBoard.movePlayer(currentPlayerIndex,moveDistance);
-                    cout<<"You are now at tile position "<<gameBoard.getPlayerPosition(currentPlayerIndex)<<".\n";
-                    gameBoard.displayBoard();
+                    cout<<"Position: "<<gameBoard.getPlayerPosition(currentPlayerIndex)<<".\n";
+                    if(!gameOver) gameBoard.displayBoard();
                     endTurn=true;
 
                     Tile currentTile=gameBoard.getTileAtPlayerPosition(currentPlayerIndex);
@@ -315,15 +355,29 @@ int main() {
                     Player updatedPlayer = players[currentPlayerIndex];
                     bool canChangeAdvisor=(players[currentPlayerIndex].getPathType()==1);
 
-                    // Handle tile events using data from 'events' and 'riddles'
+                    // Handle tile events
                     if(tileType==REGULAR_TILE){
                         updatedPlayer=Tile::handleRegularTile(updatedPlayer, events, eventRes.count);
                     } else if(tileType==OASIS_TILE){
                         Tile::OasisResult res=Tile::handleOasisTile(updatedPlayer);
                         updatedPlayer=res.player;
-                        endTurn=res.endTurn;
+                        endTurn=res.endTurn; 
                     } else if(tileType==COUNSELING_TILE){
+                        // Player on counseling tile can gain stats and possibly switch advisor
                         updatedPlayer=Tile::handleCounselingTile(updatedPlayer,canChangeAdvisor);
+                        // If switching advisors is allowed here, do it similarly:
+                        // Example switching advisor logic:
+                        // int oldAdv = updatedPlayer.getAdvisor();
+                        // cout << "Choose new advisor:\n1.Rafiki\n2.Nala\n3.Sarabi\n4.Zazu\n5.Sarafina\n0.None\n";
+                        // int newAdv; cin >> newAdv;
+                        // while(newAdv<0||newAdv>5||(newAdv!=0 && advisorTaken[newAdv])) {
+                        //   cout<<"Invalid or Taken. Choose again: ";
+                        //   cin >> newAdv;
+                        // }
+                        // if(oldAdv!=0 && oldAdv!=newAdv) advisorTaken[oldAdv]=false;
+                        // if(newAdv!=0) advisorTaken[newAdv]=true;
+                        // updatedPlayer.setAdvisor(newAdv);
+
                     } else if(tileType==GRAVEYARD_TILE){
                         updatedPlayer=Tile::handleGraveyardTile(updatedPlayer);
                         gameBoard.movePlayer(currentPlayerIndex,-10);
@@ -340,13 +394,14 @@ int main() {
                     } else if(tileType==CASINO_TILE){
                         updatedPlayer=Tile::handleCasinoTile(updatedPlayer);
                     } else if(tileType==END_TILE){
-                        cout<<"You have reached the end tile!\n";
+                        cout<<"You reached Pride Rock!\n";
                         gameOver=true;
                     } else if(tileType==START_TILE){
-                        cout<<"You are on the Start Tile.\n";
+                        cout<<"At the Start Tile.\n";
                     }
 
                     players[currentPlayerIndex]=updatedPlayer;
+
                     if(!gameOver && tileType!=END_TILE){
                         int positions[MAX_PLAYERS];
                         int paths[MAX_PLAYERS];
@@ -374,6 +429,7 @@ int main() {
         players[i].convertTraitsToHonor();
     }
 
+    // Determine winner
     int sortedPlayerOrder[MAX_PLAYERS];
     for(int i=0;i<numPlayers;i++) sortedPlayerOrder[i]=i;
     for(int i=0;i<numPlayers-1;i++){
@@ -391,7 +447,7 @@ int main() {
     cout<<"\n============== FINAL LEADERBOARD ==============\n";
     for(int i=0;i<numPlayers;i++){
         int playerPos=sortedPlayerOrder[i];
-        cout<<i+1<<". "<<players[playerPos].getName()<<" - Honor: "<<players[playerPos].getHonor()<<endl;
+        cout<<i+1<<". "<<players[playerPos].getName()<<" - PridePoints: "<<players[playerPos].getHonor()<<endl;
     }
     cout<<"Winner: "<<players[sortedPlayerOrder[0]].getName()<<"!\n";
 
@@ -400,7 +456,7 @@ int main() {
         out<<"Game Results:\n";
         for(int i=0;i<numPlayers;i++){
             int playerPos=sortedPlayerOrder[i];
-            out<<i+1<<". "<<players[playerPos].getName()<<" - Honor: "<<players[playerPos].getHonor()<<"\n";
+            out<<i+1<<". "<<players[playerPos].getName()<<" - PridePoints: "<<players[playerPos].getHonor()<<"\n";
         }
         out.close();
         cout<<"Game results saved to game_results.txt\n";
