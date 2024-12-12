@@ -54,44 +54,53 @@ void Board::initializeBoard() {
 }
 
 void Board::initializeTiles(int path_index) {
-    Tile temp;
-    int green_count = 0;
+    // Start tile at index 0: Y, End tile at index 51: O
+    // Distinct distributions for path 0 and path 1
     int total_tiles = _BOARD_SIZE;
+    _tiles[path_index][0].color = 'Y';
+    _tiles[path_index][total_tiles-1].color = 'O';
 
-    for (int i = 0; i < total_tiles; i++) {
-        if (i == total_tiles - 1) {
-            temp.color = 'O'; // end
-        } else if (i == 0) {
-            temp.color = 'Y'; // start
-        } else if (green_count < 30 && (rand() % (total_tiles - i) < 30 - green_count)) {
-            temp.color = 'G';
-            green_count++;
+    int specialCount = 0;
+    for (int i = 1; i < total_tiles-1; i++) {
+        char chosenColor = 'G'; 
+        if (path_index == 0) {
+            // Cub Training: more beneficial tiles
+            int roll = rand()%100;
+            if(roll < 15) { chosenColor='B'; specialCount++; }  
+            else if(roll < 30) { chosenColor='P'; specialCount++; }
+            else if(roll < 35) { chosenColor='U'; specialCount++; } 
+            else if(roll < 40) { chosenColor='N'; specialCount++; } 
+            else if(roll < 45) { chosenColor='R'; specialCount++; } 
+            else { chosenColor='G'; }
         } else {
-            int color_choice = rand() % 5;
-            switch (color_choice) {
-                case 0: temp.color = 'B'; break; // Blue
-                case 1: temp.color = 'P'; break; // Pink
-                case 2: temp.color = 'N'; break; // Brown
-                case 3: temp.color = 'R'; break; // Red
-                case 4: temp.color = 'U'; break; // Purple
+            // Straight to Pride Lands: more challenging tiles
+            int roll = rand()%100;
+            if(roll < 15) { chosenColor='R'; specialCount++; }
+            else if(roll < 30) { chosenColor='N'; specialCount++; }
+            else if(roll < 45) { chosenColor='U'; specialCount++; }
+            else if(roll < 55) { chosenColor='B'; specialCount++; }
+            else if(roll < 65) { chosenColor='P'; specialCount++; }
+            else { chosenColor='G'; }
+        }
+        _tiles[path_index][i].color = chosenColor;
+    }
+
+    // Ensure at least 20 special tiles
+    if(specialCount < 20) {
+        for(int i=1; i<total_tiles-1 && specialCount<20; i++){
+            if(_tiles[path_index][i].color=='G') {
+                _tiles[path_index][i].color = (path_index==0?'B':'R');
+                specialCount++;
             }
         }
-        _tiles[path_index][i] = temp;
     }
 }
 
-bool Board::isPlayerOnTile(int player_index, int pos) {
-    return (_player_position[player_index] == pos);
-}
-
 void Board::displayTile(int path_index, int pos) {
-    bool player_present = false;
-    int whichPlayer = -1;
+    string playerIcons = "";
     for(int i=0;i<_player_count;i++){
-        if(_player_path[i]==path_index && _player_position[i]==pos){
-            player_present=true;
-            whichPlayer=i;
-            break;
+        if(_player_path[i] == path_index && _player_position[i] == pos) {
+            playerIcons += to_string(i+1);
         }
     }
 
@@ -109,10 +118,10 @@ void Board::displayTile(int path_index, int pos) {
     else if (c == 'F') color = MAGENTA;
     else if (c == 'C') color = YELLOW;
 
-    if (player_present) {
-        cout << color << "|" << (whichPlayer+1) << "|" << RESET;
-    } else {
+    if(playerIcons == "") {
         cout << color << "| |" << RESET;
+    } else {
+        cout << color << "|" << playerIcons << "|" << RESET;
     }
 }
 

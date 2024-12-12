@@ -15,7 +15,6 @@ private:
 
     void displayTile(int path_index, int pos);
     void initializeTiles(int path_index);
-    bool isPlayerOnTile(int player_index, int pos);
 
 public:
     Board();
@@ -31,7 +30,6 @@ public:
     int getLastMove(int player_index) const;
     int getBoardSize() const {return _BOARD_SIZE;}
 
-    // New helpers to get all player positions and paths at once
     void getAllPlayerPositions(int playerCount, int positions[]) const;
     void getAllPlayerPaths(int playerCount, int paths[]) const;
 };
