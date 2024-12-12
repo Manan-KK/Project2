@@ -15,7 +15,7 @@ struct LoadResult {
 };
  
 
-// No filenames as parameters, no references
+// Loading Individual Terms so can be displayed later
 LoadResult loadCharacters(string names[], int ages[], int mights[], int ends[], int cunnings[]) {
     LoadResult result;
     result.count = 0;
@@ -260,7 +260,7 @@ int main() {
 
         gameBoard.setPlayerPath(playerIndex,p.getPathType());
         p.setName(pName);
-        cout << pName << " has chosen: " << p.getName() << "!\n";
+        cout << pName << " has chosen!\n";
         players[playerIndex]=p;
     }
 

@@ -138,7 +138,6 @@ void Board::initializeTiles(int player_index)
 
 void Board::displayTile(int path_index, int pos)
 {
-    // Gather player icons
     string playerIcons = "";
     for (int i = 0; i < _player_count; i++) {
         if (_player_path[i] == path_index && _player_position[i] == pos) {
@@ -146,7 +145,6 @@ void Board::displayTile(int path_index, int pos)
         }
     }
 
-    // Determine tile color background
     char c = _tiles[path_index][pos].color;
     string color = "";
     if      (c == 'R') color = RED;
@@ -174,7 +172,6 @@ void Board::displayTrack(int path_index)
     for (int i = 0; i < _BOARD_SIZE; i++) {
         displayTile(path_index, i);
         if (_tiles[path_index][i].color == 'O') {
-            // We've hit the win tile, end this track here
             break;
         }
     }
