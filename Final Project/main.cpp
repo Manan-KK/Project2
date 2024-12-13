@@ -242,7 +242,7 @@ int main() {
             p.incCunning(1000);
             p.setPathType(0);
             cout << "Initial advisor selection:\n"
-                 << "1. Chapter Master\n2. Ethereal\n3. Ork Mek\n4. Eldar Farseer\n5. Necron Cryptek\n0. None\nChoice: ";
+                 << "1. Chapter Master\n2. Ethereal Overseer\n3. Ork Mek\n4. Eldar Farseer\n5. Necron Cryptek\n0. None\nChoice: ";
             int advChoice; cin >> advChoice;
             while(advChoice<0||advChoice>5||(advChoice!=0 && advisorTaken[advChoice])){
                 cout << "Invalid or Advisor taken. Choose again: ";
@@ -319,7 +319,7 @@ int main() {
                     int adv=players[currentPlayerIndex].getAdvisor();
                     switch(adv){
                         case 1:cout<<"Chapter Master";break;
-                        case 2:cout<<"Ethereal";break;
+                        case 2:cout<<"Ethereal Overseer";break;
                         case 3:cout<<"Ork Mek";break;
                         case 4:cout<<"Eldar Farseer";break;
                         case 5:cout<<"Necron Cryptek";break;
@@ -327,9 +327,6 @@ int main() {
                     }
                     cout<<"\n";
 
-                    // Switching advisors (if desired) would occur on a special tile, not here
-                    // unless you add the logic similar to initial selection,
-                    // checking advisorTaken[] and releasing/taking advisors as needed.
                 } else if(menuChoice==5){
                     cout<<"Press Enter to spin...\n";
                     cin.ignore();

@@ -107,7 +107,7 @@ void Board::initializeTiles(int player_index)
             char c = _tiles[player_index][i].color;
             if (c == 'G') {
                 if (player_index == 0) {
-                    // Cub Training path: beneficial set (B,P,S,C)
+                    // Cub Training path: beneficial set
                     int roll = rand() % 100;
                     if (roll < 15) c='B';
                     else if (roll < 30) c='P';
@@ -118,7 +118,7 @@ void Board::initializeTiles(int player_index)
                     else if (roll < 85) c='F';
                     else c='C';
                 } else {
-                    // Straight to Pride Lands: challenging set (R,N,U,F)
+                    // Straight to Pride Lands: challenging set 
                     int roll = rand() % 100;
                     if (roll < 15) c='N';
                     else if (roll < 30) c='U';
